@@ -3,4 +3,7 @@
     <string name="main_instruction">Star your favourites!</string>
     <string name="starred_true">Starred!</string>
     <string name="starred_false">Sad</string>
+    <string name="login_email">Input email</string>
+    <string name="login_password">Input password</string>
+    <string name="login">Enter</string>
 </resources>
