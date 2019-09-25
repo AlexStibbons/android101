@@ -12,6 +12,10 @@ import com.example.proto_korzo.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    EditText email;
+    EditText password;
+    Button enter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // create scaffold
@@ -19,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.act_main);
 
         // populate layout? or initialize necessary variables?
-        Button enter = (Button) findViewById(R.id.btn_enter);
-        EditText email = (EditText) findViewById(R.id.login_email);
-        EditText password = (EditText) findViewById(R.id.login_password);
+        enter = (Button) findViewById(R.id.btn_enter);
+        email = (EditText) findViewById(R.id.login_email);
+        password = (EditText) findViewById(R.id.login_password);
 
         // why won't it accept a lambda expression here?
         enter.setOnClickListener(new View.OnClickListener() {
@@ -30,22 +34,22 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Main/login activity", "clicking?");
 
                 // if both email and pass are not null
-                if (hasData("email", "pass")) { // will a static work like this?
+                // *** password as String in not secure ***
+                if (hasData(email.getText().toString(), password.getText().toString())) { // will a static work like this?
                     // persist data
                     // pass user id to list activity
                     // enter list activity
                     Log.d("Main/login activity", "data checked; true");
                 } else {
                     // error
-                    Log.e("Main/login activity", "error during hasData check");
+                    Log.e("Main/login activity", "error during onClick/hasData check");
                 }
-
             }
         });
 
     }
-    private static boolean hasData(String email, String pass) {
-        if (email != null && pass !=null) {
+    private static boolean hasData(String email, String password) {
+        if (!email.isEmpty() && !password.isEmpty()) {
             return true;
         }
             return false;
