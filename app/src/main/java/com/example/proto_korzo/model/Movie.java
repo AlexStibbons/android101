@@ -7,12 +7,14 @@ import androidx.room.PrimaryKey;
 import java.util.List;
 import java.util.ArrayList;
 
-@Entity
+@Entity(tableName = "movies")
 public class Movie {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private long id;
+
     private String title;
+
     private String rating;
 
     // somehow n:n
