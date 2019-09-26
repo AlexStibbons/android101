@@ -1,13 +1,24 @@
 package com.example.proto_korzo.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity(tableName = "users")
 public class User {
 
+    @PrimaryKey
     private long id;
+
     private String email;
+
     private String password;
+
+    // somehoe n:n
+    @ColumnInfo(name = "user_favourites")
     private List<Movie> favourites = new ArrayList<>();
 
     public User() {

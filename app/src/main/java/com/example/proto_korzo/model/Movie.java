@@ -1,13 +1,22 @@
 package com.example.proto_korzo.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.List;
 import java.util.ArrayList;
 
+@Entity
 public class Movie {
 
-    private long id; // check ROOM requirements
+    @PrimaryKey
+    private long id;
     private String title;
-    private String rating; // ?
+    private String rating;
+
+    // somehow n:n
+    @ColumnInfo(name = "favourited_by")
     private List<User> users = new ArrayList<>();
 
     public Movie() {

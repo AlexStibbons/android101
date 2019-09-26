@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -53,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
                     // if user is not in DB, create one, return user id
                     //if (userId == -1 ) {
-                        // create user
-                        // User newUser = new User(emailString, passString);
-                       // userId = newUser.getId();
-                   // }
+                    // create user
+                    // User newUser = new User(emailString, passString);
+                    // userId = newUser.getId();
+                    // }
 
                     // pass userId to ListsActivity
 
@@ -65,8 +66,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "data checked; true");
                 } else {
                     // error
-                    // a pop maybe?
-                    Log.e(TAG, "error during onClick/hasLoginData check");
+                    // a pop maybe? "a toast"
+                    Toast.makeText(MainActivity.this, "input fields", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "error during onClick/hasLoginData check"); // try/catch instead of if/else?
                 }
             }
         });

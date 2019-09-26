@@ -5,8 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class FilmActivity extends AppCompatActivity {
-
+public class MovieActivity extends AppCompatActivity {
 
 
 
