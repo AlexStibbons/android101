@@ -9,49 +9,68 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proto_korzo.R;
+import com.example.proto_korzo.Utils;
 
 public class MainActivity extends AppCompatActivity {
 
+    // a tag for logs
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    // declare necessary variables : long way
     EditText email;
     EditText password;
     Button enter;
 
-    @Override
+    // initialize necessary variables : short way using ButterKnife
+    // [no need to find them in onCreate]
+    // @BindView(R.id.btn_enter) Button enter;
+
+    @Override // should Bundle be @Nullable?
     protected void onCreate(Bundle savedInstanceState) {
-        // create scaffold
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
 
-        // populate layout? or initialize necessary variables?
+        // initialize necessary variables : long way
         enter = (Button) findViewById(R.id.btn_enter);
         email = (EditText) findViewById(R.id.login_email);
         password = (EditText) findViewById(R.id.login_password);
 
-        // why won't it accept a lambda expression here?
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Main/login activity", "clicking?");
+                Log.d(TAG, "clicking");
 
-                // if both email and pass are not null
-                // *** password as String in not secure ***
-                if (hasData(email.getText().toString(), password.getText().toString())) { // will a static work like this?
-                    // persist data
-                    // pass user id to list activity
-                    // enter list activity
-                    Log.d("Main/login activity", "data checked; true");
+                String emailString = email.getText().toString();
+                String passString = password.getText().toString();
+
+                // if the fields are empty, will the below work?
+                if (Utils.hasLoginData(emailString, passString)) {
+                    // *** password as String is not secure ***
+
+                    // find user in remote DB
+                    //long userId = Utils.findUserIdByEmail(emailString);
+
+                    // if user is not in DB, create one, return user id
+                    //if (userId == -1 ) {
+                        // create user
+                        // User newUser = new User(emailString, passString);
+                       // userId = newUser.getId();
+                   // }
+
+                    // pass userId to ListsActivity
+
+                    // switch to ListsActivity
+
+                    Log.d(TAG, "data checked; true");
                 } else {
                     // error
-                    Log.e("Main/login activity", "error during onClick/hasData check");
+                    // a pop maybe?
+                    Log.e(TAG, "error during onClick/hasLoginData check");
                 }
             }
         });
 
     }
-    private static boolean hasData(String email, String password) {
-        if (!email.isEmpty() && !password.isEmpty()) {
-            return true;
-        }
-            return false;
-    }
+
 }
