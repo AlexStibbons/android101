@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     Button enter;
 
     // where should userId go?
-    long userId;
+    long userId; // --> how to set this value from AsyncTask?
 
     // declare database
     private DBUserMovie database;
@@ -69,8 +69,9 @@ public class LoginActivity extends AppCompatActivity {
 
                     // if user is found, the above userId is now > 0
                     // if not, the user must be created
-                    if (userId < 0) {
+                    if (userId <= 0) {
                         User newUser = new User(emailString, passString);
+                        Log.d("create user if id 0", "user" + newUser.getEmail() + " and " + newUser.getPassword());
                         new InsertUser(LoginActivity.this).execute(newUser);
                     }
                     // in any event, the above userId is now valid
@@ -111,7 +112,10 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // doInBackground returns here - userId is found userId from above
-        protected void onPostExecute(long userId) {
+        @Override
+        protected void onPostExecute(Long userId) {
+            super.onPostExecute(userId);
+            Log.d("Find / onPost", "id: " + userId);
             long userId_activity = activityReference.get().userId;
             if (userId > 0) {
                 userId_activity = userId;
@@ -124,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
     // inner class for CREATING new user
     private static class InsertUser extends AsyncTask<User, Void, Long> {
 
+
         private WeakReference<LoginActivity> activityReference;
 
         InsertUser(LoginActivity context) {
@@ -134,14 +139,19 @@ public class LoginActivity extends AppCompatActivity {
         protected Long doInBackground(User... users) {
 
             long userId = activityReference.get().database.getUserDao().addUser(users[0]);
-
+            Log.d("bkg / add", "id: " + userId);
             return userId;
         }
 
-        protected void onPostExecute(long userId) {
+        @Override
+        protected void onPostExecute(Long userId) {
+            super.onPostExecute(userId);
             long activity_userId = activityReference.get().userId;
+            Log.d("Insert / onPost", "id: " + userId);
             activity_userId = userId;
         }
+
     }
+
 }
 
