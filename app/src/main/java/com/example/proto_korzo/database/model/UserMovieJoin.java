@@ -1,4 +1,4 @@
-package com.example.proto_korzo.model;
+package com.example.proto_korzo.database.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;

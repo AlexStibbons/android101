@@ -1,18 +1,23 @@
-package com.example.proto_korzo.DAOs;
+package com.example.proto_korzo.database.DAOs;
 
+import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.example.proto_korzo.model.Movie;
-import com.example.proto_korzo.model.User;
-import com.example.proto_korzo.model.UserMovieJoin;
+import com.example.proto_korzo.database.model.Movie;
+import com.example.proto_korzo.database.model.User;
+import com.example.proto_korzo.database.model.UserMovieJoin;
 
 import java.util.List;
 
 public interface UserMovieDAO {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     public void addUserMovie(UserMovieJoin userMovie);
+
+    @Delete
+    public void deleteUserMovie(UserMovieJoin userMovie);
 
     // why not LEFT JOIN?
 
@@ -21,6 +26,9 @@ public interface UserMovieDAO {
 
     @Query("SELECT * FROM users INNER JOIN user_movie ON users.id = user_movie.userId WHERE user_movie.movieId = :id")
     public List<User> getUsersByMovieId(long id);
+
+
+
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.proto_korzo.model;
+package com.example.proto_korzo.database.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

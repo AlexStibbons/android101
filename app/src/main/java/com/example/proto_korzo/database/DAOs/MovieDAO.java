@@ -1,11 +1,11 @@
-package com.example.proto_korzo.DAOs;
+package com.example.proto_korzo.database.DAOs;
 
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.proto_korzo.model.Movie;
+import com.example.proto_korzo.database.model.Movie;
 
 import java.util.List;
 
