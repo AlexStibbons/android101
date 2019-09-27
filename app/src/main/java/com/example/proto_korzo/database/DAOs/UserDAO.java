@@ -10,7 +10,7 @@ import com.example.proto_korzo.database.model.User;
 
 import java.util.List;
 
-@Dao // like repository in spring boot
+@Dao
 public interface UserDAO {
 
     @Query("SELECT * FROM users")
@@ -23,7 +23,7 @@ public interface UserDAO {
     public User getUserById(long id);
 
     @Insert
-    public void addUser(User user);
+    public long addUser(User user);
 
     @Update
     public void updateUser(User user);

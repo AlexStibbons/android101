@@ -14,13 +14,14 @@ import com.example.proto_korzo.database.model.User;
 import com.example.proto_korzo.database.model.UserMovieJoin;
 
 @Database(entities = {Movie.class, User.class, UserMovieJoin.class},
-        version = 1)
+        version = 1,
+        exportSchema = false)
 public abstract class DBUserMovie extends RoomDatabase {
 
     // name for reference
     public static final String DB_NAME = "appDb";
 
-    private static /*volatile*/ DBUserMovie instance;
+    private static /* volatile ?? */ DBUserMovie instance;
 
     // get all entities
     public abstract UserDAO getUserDao();
@@ -28,7 +29,7 @@ public abstract class DBUserMovie extends RoomDatabase {
     public abstract UserMovieDAO getUserMovieDao();
 
     // get a singleton
-    public static /*synchronized*/ DBUserMovie getInstance(Context context) {
+    public static synchronized DBUserMovie getInstance(Context context) {
         if (null == instance) {
             instance = buildDatabaseInstance(context);
         }

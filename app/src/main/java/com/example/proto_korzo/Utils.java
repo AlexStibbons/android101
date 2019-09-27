@@ -9,16 +9,7 @@ public class Utils {
         return false;
     }
 
-    public static long findUserIdByEmail(String email) {
 
-        // better to return id only, not a whole User object
-       /* User foundUser = DbService.getByEmail(email);
-        if (foundUser != null) {
-            return foundUser.getId();
-        }*/
-
-        return -1;
-    }
 
 
 }

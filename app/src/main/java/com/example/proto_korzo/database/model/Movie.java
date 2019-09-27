@@ -2,6 +2,7 @@ package com.example.proto_korzo.database.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.List;
@@ -15,18 +16,20 @@ public class Movie {
 
     private String title;
 
-    private String rating;
+    private String description;
 
     // somehow n:n
+    @Ignore
     @ColumnInfo(name = "favourited_by")
     private List<User> users = new ArrayList<>();
 
+    @Ignore
     public Movie() {
     }
 
-    public Movie(String title, String rating) {
+    public Movie(String title, String description) {
         this.title = title;
-        this.rating = rating;
+        this.description = description;
     }
 
     public long getId() {
@@ -45,12 +48,12 @@ public class Movie {
         this.title = title;
     }
 
-    public String getRating() {
-        return rating;
+    public String getDescription() {
+        return description;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<User> getUsers() {

@@ -2,6 +2,7 @@ package com.example.proto_korzo.database.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
@@ -17,10 +18,12 @@ public class User {
 
     private String password;
 
-    // somehoe n:n
+    // somehow n:n
+    @Ignore
     @ColumnInfo(name = "user_favourites")
     private List<Movie> favourites = new ArrayList<>();
 
+    @Ignore
     public User() {
     }
 

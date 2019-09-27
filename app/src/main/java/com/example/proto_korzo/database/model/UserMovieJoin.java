@@ -2,6 +2,7 @@ package com.example.proto_korzo.database.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 
 @Entity(tableName = "user_movie",
         primaryKeys = { "userId", "movieId" },
@@ -19,6 +20,7 @@ public class UserMovieJoin {
 
     private long movieId;
 
+    @Ignore
     public UserMovieJoin() {
     }
 
