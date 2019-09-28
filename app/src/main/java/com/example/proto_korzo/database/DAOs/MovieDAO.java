@@ -24,11 +24,11 @@ public interface MovieDAO {
    // public List<Movie> getMoviesByTitleContains(String title);
 
     @Insert
-    public void addMovie(Movie movie);
+    public long addMovie(Movie movie);
 
     @Delete
     public void deleteMovie(Movie movie);
 
     @Update
-    public void updateMovie(Movie movie);
+    public long updateMovie(Movie movie);
 }

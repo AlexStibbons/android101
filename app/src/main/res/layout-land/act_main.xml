@@ -18,24 +18,23 @@
 
     <EditText
         android:id="@+id/login_email"
-        android:layout_width="414dp"
+        android:layout_width="681dp"
         android:layout_height="70dp"
-        android:layout_marginTop="168dp"
+        android:layout_marginTop="152dp"
         android:autofillHints="@string/login_email"
         android:ems="10"
         android:hint="@string/login_email"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/login_password"
-        android:layout_width="416dp"
+        android:layout_width="681dp"
         android:layout_height="77dp"
         android:layout_marginTop="32dp"
-        android:autofillHints="@string/login_email"
+        android:autofillHints="@string/login_password"
         android:ems="10"
         android:hint="@string/login_password"
         android:inputType="textPassword"
@@ -62,12 +61,12 @@
         android:layout_width="99dp"
         android:layout_height="88dp"
         android:layout_marginTop="44dp"
+        android:contentDescription="android droid"
         app:layout_constraintBottom_toTopOf="@+id/login_email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.041"
-        app:srcCompat="@mipmap/ic_launcher_round"
-        android:contentDescription="android droid"/>
+        app:srcCompat="@mipmap/ic_launcher_round" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

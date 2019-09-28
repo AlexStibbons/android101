@@ -31,8 +31,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText password;
     Button enter;
 
-    // where should userId go?
-    long userId; // --> how to set this value from AsyncTask?
+    // declare variable that needs to be found and then passed to other activity
+    long userId;
 
     // declare database
     private DBUserMovie database;
@@ -51,42 +51,38 @@ public class LoginActivity extends AppCompatActivity {
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "clicking");
 
-                // if the fields are empty, will the below work?
                 String emailString = email.getText().toString();
                 String passString = password.getText().toString();
+                Log.d("getting info", "info " + emailString + " and " + passString);
 
-                if (Utils.hasLoginData(emailString, passString)) { // --> then perform checks in DB + return ID
-                    // *** password as String is not secure ***
+                if (Utils.hasLoginData(emailString, passString)) { // *** password as String is not secure ***
 
                     // get DB instance
                     database = DBUserMovie.getInstance(LoginActivity.this);
 
                     // start background threads for communication with DB
-                    // find user in DB
-                    new RetreiveUser(LoginActivity.this).execute(emailString);
+                    // find or create user in DB
+                    new RetreiveOrCreateUser(LoginActivity.this, userId)
+                            .execute(emailString, passString);
 
-                    // if user is found, the above userId is now > 0
-                    // if not, the user must be created
-                    if (userId <= 0) {
-                        User newUser = new User(emailString, passString);
-                        Log.d("create user if id 0", "user" + newUser.getEmail() + " and " + newUser.getPassword());
-                        new InsertUser(LoginActivity.this).execute(newUser);
-                    }
-                    // in any event, the above userId is now valid
+                    // below logged before async task so id is 0
+                    Log.d("after retretive", "userId should be not null, is " + userId);
+
+                    // in any event, the above userId *should* now be valid
+
+                    // does everything else run in onPostExecute now?
 
                     // pass userId to ListsActivity
 
                     // switch to ListsActivity
 
+                    // again, logged before async task
                     Log.d(TAG, "data checked; true");
                     Log.d(TAG, "userId: " + userId);
                 } else {
-                    // error
-                    // a pop maybe? "a toast"
                     Toast.makeText(LoginActivity.this, "something happened", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "error during onClick/hasLoginData check"); // try/catch instead of if/else?
+                    Log.e(TAG, "error during onClick/hasLoginData check");
                 }
             }
         });
@@ -95,62 +91,43 @@ public class LoginActivity extends AppCompatActivity {
 
     // AsyncTask --> only for short(er) tasks!
 
-    // inner class for FETCHING existing user
-    private static class RetreiveUser extends AsyncTask<String, Void, Long> {
+    private static class RetreiveOrCreateUser extends AsyncTask<String, Void, Long> {
 
         private WeakReference<LoginActivity> activityReference;
+        private long userId;
 
-        RetreiveUser(LoginActivity context) {
+        // pass in the userId from main!
+        RetreiveOrCreateUser(LoginActivity context, long userId) {
             activityReference = new WeakReference<>(context);
+            this.userId = userId;
         }
 
         // get from database
         @Override
         protected Long doInBackground(String... strings) {
-            long userId = activityReference.get().database.getUserDao().getUserIdByEmail(strings[0]);
-            return userId;
-        }
-
-        // doInBackground returns here - userId is found userId from above
-        @Override
-        protected void onPostExecute(Long userId) {
-            super.onPostExecute(userId);
-            Log.d("Find / onPost", "id: " + userId);
-            long userId_activity = activityReference.get().userId;
-            if (userId > 0) {
-                userId_activity = userId;
-            } else {
-                userId_activity = -1;
+            userId = activityReference.get().database.getUserDao().getUserIdByEmail(strings[0]);
+            Log.d("Finding by email", "found: " + userId);
+            if (userId <= 0 ) {
+                userId = activityReference.get().database.getUserDao().addUser(new User(strings[0], strings[1]));
+                return userId;
             }
-        }
-    }
-
-    // inner class for CREATING new user
-    private static class InsertUser extends AsyncTask<User, Void, Long> {
-
-
-        private WeakReference<LoginActivity> activityReference;
-
-        InsertUser(LoginActivity context) {
-            activityReference = new WeakReference<>(context);
-        }
-
-        @Override
-        protected Long doInBackground(User... users) {
-
-            long userId = activityReference.get().database.getUserDao().addUser(users[0]);
-            Log.d("bkg / add", "id: " + userId);
+            Log.d("from bkg", "userId is now: " + userId);
             return userId;
         }
 
+        // doInBackground returns to onPostExecute, passes its return (which is also the userId from main)
+        // onPostExecute runs in main thread
+
+        // does the userId from activity really change?
+        // should main from above be ignored because onPostExecute is the 'new' main?
         @Override
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
-            long activity_userId = activityReference.get().userId;
-            Log.d("Insert / onPost", "id: " + userId);
-            activity_userId = userId;
-        }
+            Log.d("Async/passed to onPost", "id: " + userId);
+            // if userId > 0
+            // do something
 
+        }
     }
 
 }
