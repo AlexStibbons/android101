@@ -26,7 +26,7 @@ public interface UserDAO {
     public long addUser(User user);
 
     @Update
-    public long updateUser(User user);
+    public void updateUser(User user);
 
     @Delete
     public void deleteUser(User user);

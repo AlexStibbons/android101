@@ -30,5 +30,5 @@ public interface MovieDAO {
     public void deleteMovie(Movie movie);
 
     @Update
-    public long updateMovie(Movie movie);
+    public void updateMovie(Movie movie);
 }

@@ -1,5 +1,7 @@
 package com.example.proto_korzo.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // a tag for logs
     private static final String TAG = LoginActivity.class.getSimpleName();
+    public static final String EXTRA_ID = "com.example.proto_korzo.UserId";
 
     // initialize necessary variables : short way using ButterKnife
     // [no need to find them in onCreate]
@@ -66,20 +69,8 @@ public class LoginActivity extends AppCompatActivity {
                     new RetreiveOrCreateUser(LoginActivity.this, userId)
                             .execute(emailString, passString);
 
-                    // below logged before async task so id is 0
-                    Log.d("after retretive", "userId should be not null, is " + userId);
+                    // rest of this thread is now in onPostExecute [right?]
 
-                    // in any event, the above userId *should* now be valid
-
-                    // does everything else run in onPostExecute now?
-
-                    // pass userId to ListsActivity
-
-                    // switch to ListsActivity
-
-                    // again, logged before async task
-                    Log.d(TAG, "data checked; true");
-                    Log.d(TAG, "userId: " + userId);
                 } else {
                     Toast.makeText(LoginActivity.this, "something happened", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "error during onClick/hasLoginData check");
@@ -95,11 +86,13 @@ public class LoginActivity extends AppCompatActivity {
 
         private WeakReference<LoginActivity> activityReference;
         private long userId;
+        private Context context;
 
-        // pass in the userId from main!
+        // since context must be passed in for intent, weak reference unnecessary?
         RetreiveOrCreateUser(LoginActivity context, long userId) {
             activityReference = new WeakReference<>(context);
             this.userId = userId;
+            this.context = context.getApplicationContext();
         }
 
         // get from database
@@ -118,15 +111,17 @@ public class LoginActivity extends AppCompatActivity {
         // doInBackground returns to onPostExecute, passes its return (which is also the userId from main)
         // onPostExecute runs in main thread
 
-        // does the userId from activity really change?
-        // should main from above be ignored because onPostExecute is the 'new' main?
         @Override
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
             Log.d("Async/passed to onPost", "id: " + userId);
-            // if userId > 0
-            // do something
+            // start new activity
 
+            // should an intent be here at all?
+            Intent intent = new Intent(context, ListsActivity.class);
+            intent.putExtra(EXTRA_ID, userId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         }
     }
 
