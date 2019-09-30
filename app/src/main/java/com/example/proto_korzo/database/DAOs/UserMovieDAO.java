@@ -24,10 +24,10 @@ public interface UserMovieDAO {
     // why not LEFT JOIN?
 
     // how is this select a movie?
-    @Query("SELECT movies.id, movies.title, movies.description FROM movies INNER JOIN user_movie ON movies.id = user_movie.movieId WHERE user_movie.userId = :id")
+   @Query("SELECT movies.id, movies.title, movies.description FROM movies INNER JOIN user_movie ON movies.id = user_movie.movieId WHERE user_movie.userId = :id")
     public List<Movie> getMoviesByUserId(long id);
 
-    /*@Query("SELECT * FROM movies INNER JOIN user_movie ON movies.id = user_movie.movieId WHERE user_movie.userId = :id")
+   /* @Query("SELECT * FROM movies INNER JOIN user_movie ON movies.id = user_movie.movieId WHERE user_movie.userId = :id")
     public List<Movie> getMoviesByUserId(long id);*/
 
     @Query("SELECT * FROM users INNER JOIN user_movie ON users.id = user_movie.userId WHERE user_movie.movieId = :id")

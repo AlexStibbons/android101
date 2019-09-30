@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText password;
     Button enter;
 
+
     // declare variable that needs to be found and then passed to other activity
     long userId;
 
@@ -82,6 +83,13 @@ public class LoginActivity extends AppCompatActivity {
 
     // AsyncTask --> only for short(er) tasks!
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
     private static class RetreiveOrCreateUser extends AsyncTask<String, Void, Long> {
 
         private WeakReference<LoginActivity> activityReference;
@@ -94,6 +102,8 @@ public class LoginActivity extends AppCompatActivity {
             this.userId = userId;
             this.context = context.getApplicationContext();
         }
+
+
 
         // get from database
         @Override

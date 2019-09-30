@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,8 +17,6 @@ import com.example.proto_korzo.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
@@ -85,11 +83,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public /*static?*/ class ViewHolder extends RecyclerView.ViewHolder {
 
         // declare what needs to be used
-        CircleImageView image;
+        //CircleImageView image;
+        ImageView image;
         TextView title;
         // TextView description;
         // star button
-        RelativeLayout movieItemLayout;
+        View movieItemLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

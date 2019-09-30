@@ -1,14 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_all_movies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="all movies"
+        app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
+        app:layout_constraintRight_toLeftOf="@id/btn_faves" />
+
+    <Button
+        android:id="@+id/btn_faves"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="favorites"
+        app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
+        app:layout_constraintLeft_toRightOf="@id/btn_all_movies" />
+
+    <TextView
+        android:id="@+id/idView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:text="TEXT TEXT"
+        android:textColor="#000"
+        app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
+        app:layout_constraintLeft_toRightOf="@id/btn_faves"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/movie_list_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/movie_list_recycler"
-        android:scrollbars="vertical"/>
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_bottom" />
 
-</RelativeLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="-20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="530dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 

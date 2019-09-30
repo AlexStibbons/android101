@@ -20,7 +20,9 @@ public class TEST_RECYCLER extends AppCompatActivity {
 
     // declare everything that needs to be used
     // in this case, that would be all the lists used in adapter
-    private List<String> mTitles = Arrays.asList("Title 1", "Title 2", "Title 3", "Title 4", "Title 5");
+    private List<String> mTitles = Arrays.asList("Title 1", "Title 2", "Title 3", "Title 4", "Title 5",
+            "Title 6", "Title 7", "Title 8", "Title 9", "Title 10",
+            "Title 11", "Title 12", "Title 13", "Title 14", "Title 15");
     private List<String> mImages = new ArrayList<>();
     // the list needs to be one list of movies
     // retreived from moviedb api
@@ -41,7 +43,7 @@ public class TEST_RECYCLER extends AppCompatActivity {
 
         // find the recycler view
         // this is the id in xml where recycler appears
-        RecyclerView recyclerView = findViewById(R.id.movie_list_recycler);
+        RecyclerView recyclerView = findViewById(R.id.movie_list_recycler_view);
 
         // get the adapter too
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(mImages, mTitles, this);
@@ -49,12 +51,24 @@ public class TEST_RECYCLER extends AppCompatActivity {
         // set the adapter to the recycler
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
     }
 
     private void initImageBitmaps() {
         Log.d(TAG, "initImageBitmaps: prepping bitmaps");
 
         // find some urls
+        mImages.add("https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1");
+        mImages.add("https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1");
+        mImages.add("https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1");
+        mImages.add("http://strangehorizons.com/wordpress/wp-content/uploads/2019/07/regret-return_600px.png");
+        mImages.add("http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png");
+        mImages.add("https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1");
+        mImages.add("https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1");
+        mImages.add("https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1");
+        mImages.add("http://strangehorizons.com/wordpress/wp-content/uploads/2019/07/regret-return_600px.png");
+        mImages.add("http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png");
         mImages.add("https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1");
         mImages.add("https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1");
         mImages.add("https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1");
