@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                 String passString = password.getText().toString();
                 Log.d("getting info", "info " + emailString + " and " + passString);
 
-                if (Utils.hasLoginData(emailString, passString)) { // *** password as String is not secure ***
+                if (Utils.hasLoginData(emailString, passString)) {
 
                     // get DB instance
                     database = DBUserMovie.getInstance(LoginActivity.this);

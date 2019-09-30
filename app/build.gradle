@@ -40,4 +40,14 @@ dependencies {
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 
+    // recycler view dependency
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta04'
+
+    // glide
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+
+    // circle image view because why not
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+
 }

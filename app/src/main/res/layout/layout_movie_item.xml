@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:id="@+id/layout_movie_item">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/movie_image"
+        android:src="@mipmap/ic_launcher"/>
+
+    <!--ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/movie_image_square"
+        android:src="@mipmap/ic_launcher"/-->
+
+    <TextView
+        android:id="@+id/movie_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/movie_image"
+        android:text="TITLE"
+        android:textColor="#000"
+        android:textSize="17dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="25dp"
+        android:layout_toEndOf="@id/movie_image"/>
+
+    <!--TextView
+        android:id="@+id/movie_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/movie_title"
+        android:layout_toRightOf="@id/movie_image"
+        android:layout_toEndOf="@id/movie_image"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="17dp"
+        android:text="DESCRIPTION"
+        android:textColor="#000"
+        /-->
+
+
+</RelativeLayout>
