@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.database.DBUserMovie;
+import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.database.model.User;
 
 import java.util.ArrayList;
@@ -19,8 +20,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ListsActivity extends AppCompatActivity {
+
     private static final String TAG = "ListsActivity";
+
     private DBUserMovie database;
+    //ToggleButton btnFavourite;
     TextView textId;
 
     //    **************** RECYCLER VIEW ****************
@@ -31,9 +35,8 @@ public class ListsActivity extends AppCompatActivity {
             "Title 11", "Title 12", "Title 13", "Title 14", "Title 15");
     private List<String> mImages = new ArrayList<>();
     // the list needs to be one list of movies
-    // retreived from moviedb api
+    // retrieved from moviedb api
     // or from userId - favourite movies
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,15 +44,16 @@ public class ListsActivity extends AppCompatActivity {
         setContentView(R.layout.fragment_movie_list);
 
         database = DBUserMovie.getInstance(this);
+        //btnFavourite = (ToggleButton) findViewById(R.id.btn_favorite);
 
         Intent i = getIntent();
         Long id = i.getLongExtra(LoginActivity.EXTRA_ID, -1);
-
         // no communication with DB from main!
         User user = database.getUserDao().getUserById(id);
+        List<Movie> movies = database.getUserMovieDao().getMoviesByUserId(id);
 
-        textId = (TextView) findViewById(R.id.idView);
-        textId.setText("This user's id is: " + id + " \nEmail: " + user.getEmail());
+       textId = (TextView) findViewById(R.id.idView);
+       textId.setText("This user's id is: " + id + " \nEmail: " + user.getEmail());
 
         // populate recycler view
         initImageBitmaps();
@@ -60,24 +64,20 @@ public class ListsActivity extends AppCompatActivity {
         //  add a star to corner of cards
         //  persist when clicked fave/unfave
         //  on list click (AdapterView / OnItemClickListener) open new activity
+
     }
 
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: started");
-
         // find the recycler view
         // this is the id in xml where recycler appears
         RecyclerView recyclerView = findViewById(R.id.movie_list_recycler_view);
-
         // get the adapter too
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(mImages, mTitles, this);
-
         // set the adapter to the recycler
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
     }
 
     private void initImageBitmaps() {
@@ -102,5 +102,7 @@ public class ListsActivity extends AppCompatActivity {
 
         initRecyclerView();
     }
+
+
 
 }

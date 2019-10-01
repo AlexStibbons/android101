@@ -6,7 +6,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.proto_korzo"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -22,6 +22,7 @@ android {
 
 dependencies {
     def room_version = "2.2.0-rc01"
+    def lottieVersion = "2.8.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -49,5 +50,7 @@ dependencies {
 
     // circle image view because why not
     implementation 'de.hdodenhof:circleimageview:3.0.1'
+
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 
 }

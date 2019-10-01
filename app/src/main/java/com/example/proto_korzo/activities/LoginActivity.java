@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                     new RetreiveOrCreateUser(LoginActivity.this, userId)
                             .execute(emailString, passString);
 
-                    // rest of this thread is now in onPostExecute [right?]
+                    // rest of this thread is now in onPostExecute
 
                 } else {
                     Toast.makeText(LoginActivity.this, "something happened", Toast.LENGTH_SHORT).show();
@@ -104,7 +104,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-
         // get from database
         @Override
         protected Long doInBackground(String... strings) {
@@ -125,13 +124,14 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
             Log.d("Async/passed to onPost", "id: " + userId);
-            // start new activity
 
-            // should an intent be here at all?
+            // start new activity
             Intent intent = new Intent(context, ListsActivity.class);
             intent.putExtra(EXTRA_ID, userId);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
+
+            // this activity is still open?
         }
     }
 

@@ -5,56 +5,69 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_all_movies"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttons_movie_list"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="all movies"
-        app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
-        app:layout_constraintRight_toLeftOf="@id/btn_faves" />
+        app:layout_constraintBottom_toTopOf="@id/movie_list_recycler_view"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_bottom">
 
-    <Button
-        android:id="@+id/btn_faves"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="favorites"
-        app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
-        app:layout_constraintLeft_toRightOf="@id/btn_all_movies" />
+        <Button
+            android:id="@+id/btn_all_movies"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_all_movies"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_to_watch"
+            app:layout_constraintRight_toLeftOf="@id/btn_to_watch" />
 
-    <TextView
-        android:id="@+id/idView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:text="TEXT TEXT"
-        android:textColor="#000"
-        app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
-        app:layout_constraintLeft_toRightOf="@id/btn_faves"
-        app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/btn_to_watch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_to_watch_list"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:background="@color/colorPrimary"
+            app:layout_constraintBaseline_toBaselineOf="@+id/idView"
+            app:layout_constraintLeft_toRightOf="@id/btn_all_movies" />
+
+
+        <TextView
+            android:id="@+id/idView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="@string/dummy_text"
+            android:textColor="#000"
+            app:layout_constraintBottom_toTopOf="@id/buttons_movie_list"
+            app:layout_constraintLeft_toRightOf="@id/btn_to_watch"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/movie_list_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_bottom" />
+        app:layout_constraintTop_toBottomOf="@id/buttons_movie_list" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="-20dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="530dp" />
+        app:layout_constraintGuide_begin="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

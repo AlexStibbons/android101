@@ -5,9 +5,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +52,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called");
-
+        holder.btnFave.setChecked(false);
         // get the images & load them into image position
         Glide.with(mContext)
                 .asBitmap()
@@ -72,6 +74,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
+        holder.btnFave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(mContext, "checked this: " + mTitles.get(position), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(mContext, "UNchecked this: " + mTitles.get(position), Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
     }
 
     @Override
@@ -83,20 +97,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public /*static?*/ class ViewHolder extends RecyclerView.ViewHolder {
 
         // declare what needs to be used
-        //CircleImageView image;
         ImageView image;
         TextView title;
         // TextView description;
-        // star button
+        ToggleButton btnFave;
         View movieItemLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             // why not this.image, this.title, et?
-
             image = itemView.findViewById(R.id.movie_image);
             title = itemView.findViewById(R.id.movie_title);
+            btnFave = itemView.findViewById(R.id.btn_favorite);
             movieItemLayout = itemView.findViewById(R.id.layout_movie_item);
 
         }
