@@ -14,7 +14,7 @@ import com.example.proto_korzo.database.model.User;
 import com.example.proto_korzo.database.model.UserMovieJoin;
 
 @Database(entities = {Movie.class, User.class, UserMovieJoin.class},
-        version = 1,
+        version = 2,
         exportSchema = false)
 public abstract class DBUserMovie extends RoomDatabase {
 

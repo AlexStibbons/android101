@@ -18,6 +18,8 @@ public class Movie {
 
     private String description;
 
+    private String imgUrl;
+
     // somehow n:n
     @Ignore
     @ColumnInfo(name = "favourited_by")
@@ -27,9 +29,18 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(String title, String description) {
+    public Movie(String title, String description, String imgUrl) {
         this.title = title;
         this.description = description;
+        this.imgUrl = imgUrl;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public long getId() {
