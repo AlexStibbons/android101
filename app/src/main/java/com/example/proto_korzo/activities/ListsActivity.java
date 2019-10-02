@@ -110,7 +110,7 @@ public class ListsActivity extends AppCompatActivity {
                 new Movie("Title 15", "desc 15", img5));
 
         dummyMovies.addAll(input);
-        userFaves.add(input.get(0));
+        //userFaves.add(input.get(0));
         initRecyclerView();
     }
 }

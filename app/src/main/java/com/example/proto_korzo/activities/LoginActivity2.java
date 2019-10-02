@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
+import com.example.proto_korzo.database.model.User;
 
 public class LoginActivity2 extends AppCompatActivity  {
 
@@ -57,8 +58,8 @@ public class LoginActivity2 extends AppCompatActivity  {
     }
 
     public void findUser(String email, String password){
-        AsyncTask findUser = new GetUserTask(userId, database);
-        findUser.execute(email, password);
+        AsyncTask findUser = new GetUserTask(userId, database, findUserInterface);
+        findUser.execute(email);
     }
 
 
@@ -72,12 +73,20 @@ public class LoginActivity2 extends AppCompatActivity  {
 
     private static class GetUserTask extends AsyncTask<String, Void, Long>{
 
+        public interface FindUser {
+
+            public void userFound(long id);
+            public void userNotFound();
+        }
+
+        private final FindUser findUserInterface;
         private long userId;
         private DBUserMovie database;
 
-        GetUserTask(long userId, DBUserMovie database){
+        GetUserTask(long userId, DBUserMovie database, FindUser findUserInterface){
             this.userId = userId;
             this.database = database;
+            this.findUserInterface = findUserInterface;
         }
 
         @Override
@@ -90,12 +99,57 @@ public class LoginActivity2 extends AppCompatActivity  {
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
 
+            if (this.findUserInterface != null) {
+
+                if (userId > 0) {
+                    this.findUserInterface.userFound(userId);
+                } else {
+                    this.findUserInterface.userNotFound();
+                }
+
+            }
 
         }
     }
-    public interface FindUser {
+    GetUserTask.FindUser findUserInterface = new GetUserTask.FindUser() {
+        @Override
+        public void userFound(long id) {
+            intentListsActivity(id);
+        }
 
-        public void userFound(long id);
-        public void userNotFound();
+        @Override
+        public void userNotFound() {
+            String email2 = emailInput.getText().toString();
+            String password2 = passwordInput.getText().toString();
+            AsyncTask createUser = new CreateUserTask(userId, database, findUserInterface);
+            createUser.execute(email2, password2);
+        }
+    };
+
+    private static class CreateUserTask extends AsyncTask<String, Void, Long> {
+
+        private long userId;
+        private DBUserMovie database;
+        private GetUserTask.FindUser findUserInterface;
+
+        CreateUserTask(long userId, DBUserMovie database, GetUserTask.FindUser findUserInterface) {
+            this.userId = userId;
+            this.database = database;
+            this.findUserInterface = findUserInterface;
+        }
+
+        @Override
+        protected Long doInBackground(String... strings) {
+            userId = database.getUserDao().addUser(new User(strings[0], strings[1]));
+
+            return userId;
+        }
+
+        @Override
+        protected void onPostExecute(Long userId) {
+            super.onPostExecute(userId);
+            this.findUserInterface.userFound(userId);
+        }
     }
+
 }
