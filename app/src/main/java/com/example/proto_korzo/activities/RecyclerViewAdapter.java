@@ -69,14 +69,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // get titles & load them in title position
         holder.title.setText(mDummyMovies.get(position).getTitle());
         holder.description.setText(mDummyMovies.get(position).getDescription());
-        // create an onClick so something happens when user clicks on list item
-        // will have to be an intent that switches to the movie
-        // whatever list the holder gets will be a list of movie objects, not a list of strings
 
-        // click on the whole of the movie
+        // click on the whole movie item
         holder.movieItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // open movie activity
                 Log.d(TAG, "onClick: clicked list item");
                 Toast.makeText(mContext, "Title: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
             }

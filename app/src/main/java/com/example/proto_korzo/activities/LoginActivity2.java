@@ -11,12 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.proto_korzo.FindUser;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
 
-public class LoginActivity2 extends AppCompatActivity implements FindUser {
+public class LoginActivity2 extends AppCompatActivity  {
 
     private static final String TAG = "LoginActivity with interface";
     private static final String EXTRA_ID = "com.example.proto_korzo.LoginActivity2.UserId";
@@ -63,11 +62,6 @@ public class LoginActivity2 extends AppCompatActivity implements FindUser {
     }
 
 
-    @Override
-    public void userFound(long id) {
-        intentListsActivity(id);
-    }
-
     public void intentListsActivity(long userId){
 
         Intent intent = new Intent(LoginActivity2.this, ListsActivity.class);
@@ -75,10 +69,6 @@ public class LoginActivity2 extends AppCompatActivity implements FindUser {
         startActivity(intent);
     }
 
-    @Override
-    public void userNotFound() {
-        Toast.makeText(this,"lalalalal", Toast.LENGTH_LONG).show();
-    }
 
     private static class GetUserTask extends AsyncTask<String, Void, Long>{
 
@@ -100,12 +90,12 @@ public class LoginActivity2 extends AppCompatActivity implements FindUser {
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
 
-            if (userId > 0) {
-                // userFound(userId);
-            } else {
-                // userNotFound();
-            }
+
         }
     }
+    public interface FindUser {
 
+        public void userFound(long id);
+        public void userNotFound();
+    }
 }

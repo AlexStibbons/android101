@@ -14,7 +14,7 @@ public class MovieDBAPI {
         return instance;
     }
 
-    public long testy() {
-        return -1;
+    public void requests(){
+
     }
 }
