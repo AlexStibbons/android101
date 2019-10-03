@@ -2,22 +2,19 @@ package com.example.proto_korzo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.MovieDBAPI;
 import com.example.proto_korzo.database.model.Movie;
-import com.example.proto_korzo.database.model.User;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // 1. check network connectivity
@@ -48,10 +45,17 @@ public class ListsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_movie_list);
+        setContentView(R.layout.act_lists);
 
-        database = DBUserMovie.getInstance(this);
-        api = MovieDBAPI.getInstance();
+        // VIEW PAGER & TABLAYOUT FOR TABS + FRAGMENTS
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(new ViewPageAdapter(getSupportFragmentManager()));
+
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        //database = DBUserMovie.getInstance(this);
+        //api = MovieDBAPI.getInstance();
 
         //btnFavourite = (ToggleButton) findViewById(R.id.btn_favorite);
 
@@ -59,25 +63,25 @@ public class ListsActivity extends AppCompatActivity {
         Long id = i.getLongExtra(LoginActivity.EXTRA_ID, -1);
 
         // no communication with DB from main!
-        User user = database.getUserDao().getUserById(id);
-        userFaves = database.getUserMovieDao().getMoviesByUserId(id);
+        //User user = database.getUserDao().getUserById(id);
+        //userFaves = database.getUserMovieDao().getMoviesByUserId(id);
 
-       textId = (TextView) findViewById(R.id.idView);
-       textId.setText("This user's id is: " + id + " \nEmail: " + user.getEmail());
+       //textId = (TextView) findViewById(R.id.idView);
+       //textId.setText("This user's id is: " + id + " \nEmail: " + user.getEmail());
 
         // populate recycler view
-        initDummyMovies();
+       // initDummyMovies();
 
         //
     }
-
+/*
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: started");
         // find the recycler view
         // this is the id in xml where recycler appears
         RecyclerView recyclerView = findViewById(R.id.movie_list_recycler_view);
         // get the adapter too
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(dummyMovies, userFaves, this);
+        RecyclerViewAdapterAllMovies adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFaves, this);
         // set the adapter to the recycler
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -112,5 +116,5 @@ public class ListsActivity extends AppCompatActivity {
         dummyMovies.addAll(input);
         //userFaves.add(input.get(0));
         initRecyclerView();
-    }
+    }*/
 }

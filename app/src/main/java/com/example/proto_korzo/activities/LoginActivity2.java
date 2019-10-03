@@ -75,8 +75,8 @@ public class LoginActivity2 extends AppCompatActivity  {
 
         public interface FindUser {
 
-            public void userFound(long id);
-            public void userNotFound();
+            void userFound(long id);
+            void userNotFound();
         }
 
         private final FindUser findUserInterface;
