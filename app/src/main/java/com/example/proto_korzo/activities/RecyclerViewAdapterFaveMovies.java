@@ -25,7 +25,7 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
     private List<Movie> mFaveMovies;
     private Context mContext;
 
-    public RecyclerViewAdapterFaveMovies(List<Movie> mFaveMovies, Context mContext){
+    public RecyclerViewAdapterFaveMovies(List<Movie> mFaveMovies, Context mContext) {
         this.mFaveMovies = mFaveMovies;
         this.mContext = mContext;
     }
@@ -35,7 +35,7 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_movie_item, parent, false);
+                .inflate(R.layout.layout_movie_item, parent, false);
 
         ViewHolder holder = new ViewHolder(view);
 
@@ -77,12 +77,10 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
                     // if unchecked
                     // remove from DB
                     // remove from list
-                    // *** breaks when remove ***
-                    // indexes need to be updated?
-                   // mFaveMovies.remove(mFaveMovies.get(position));
-                   // getItemCount();
-                   //  notifyDataSetChanged();
                     Toast.makeText(mContext, "UNchecked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                    mFaveMovies.remove(mFaveMovies.get(position)); // remove item
+                    notifyItemRemoved(position); // notify it's removed
+                    notifyItemRangeChanged(position, mFaveMovies.size()); // notify index changes
                 }
             }
         });

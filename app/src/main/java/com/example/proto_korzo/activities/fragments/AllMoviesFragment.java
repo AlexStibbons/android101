@@ -89,5 +89,5 @@ public class AllMoviesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
     }
-    
+
 }
