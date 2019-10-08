@@ -2,6 +2,7 @@ package com.example.proto_korzo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.proto_korzo.R;
+import com.example.proto_korzo.adapters.ViewPageAdapter;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.MovieDBAPI;
 import com.example.proto_korzo.database.model.Movie;
@@ -47,9 +49,13 @@ public class ListsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_lists);
 
+        Intent i = getIntent();
+        Long id = i.getLongExtra(LoginActivity.EXTRA_ID, -1);
+        Log.e(TAG, "ACTIVITY GOTTEN ID: " + id);
+
         // VIEW PAGER & TABLAYOUT FOR TABS + FRAGMENTS
         ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(new ViewPageAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new ViewPageAdapter(getSupportFragmentManager(), id));
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
@@ -59,8 +65,7 @@ public class ListsActivity extends AppCompatActivity {
 
         //btnFavourite = (ToggleButton) findViewById(R.id.btn_favorite);
 
-        Intent i = getIntent();
-        Long id = i.getLongExtra(LoginActivity.EXTRA_ID, -1);
+
 
         // no communication with DB from main!
         //User user = database.getUserDao().getUserById(id);

@@ -1,6 +1,5 @@
 package com.example.proto_korzo.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proto_korzo.R;
@@ -17,123 +17,169 @@ import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.User;
 
-import java.lang.ref.WeakReference;
-
+// Login with interface callback
+// same as Login2, but more understandable
 public class LoginActivity extends AppCompatActivity {
 
-    // a tag for logs
-    private static final String TAG = LoginActivity.class.getSimpleName();
-    public static final String EXTRA_ID = "com.example.proto_korzo.UserId";
+    private static final String TAG = "LoginActivity";
+    public static final String EXTRA_ID = "com.example.proto_korzo.LoginActivity.UserId";
 
-    // initialize necessary variables : short way using ButterKnife
-    // [no need to find them in onCreate]
-    // @BindView(R.id.btn_enter) Button enter;
+    // before on create, what will this activity need?
+    // 1. variables, including DB instance and one for the value that needs to be passed on
+    // 2. since there will be two async tasks, an interface is useful for callback
 
-    // declare necessary variables : long way
-    EditText email; // --> EditText OR TextInputEditText ?
-    EditText password;
+    // *** interface ***
+    public interface FindUser {
+        void userFound(long id);
+        void userNotFound();
+    }
+
+    // *** needed variables ***
+    EditText etEmail;
+    EditText etPassword;
     Button enter;
 
-
-    // declare variable that needs to be found and then passed to other activity
     long userId;
-
-    // declare database
     private DBUserMovie database;
 
-    @Override // should Bundle be @Nullable?
-    protected void onCreate(Bundle savedInstanceState) {
-
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // inflate view
         setContentView(R.layout.act_main);
 
-        // initialize necessary variables : long way
-        enter = (Button) findViewById(R.id.btn_enter);
-        email = (EditText) findViewById(R.id.login_email);
-        password = (EditText) findViewById(R.id.login_password);
+        // now find the variables
+        etEmail = findViewById(R.id.login_email);
+        etPassword = findViewById(R.id.login_password);
+        enter = findViewById(R.id.btn_enter);
 
+        // once the button is clicked
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String emailString = email.getText().toString();
-                String passString = password.getText().toString();
-                Log.d("getting info", "info " + emailString + " and " + passString);
+                String email = etEmail.getText().toString();
+                String password = etPassword.getText().toString();
 
-                if (Utils.hasLoginData(emailString, passString)) {
+                if (Utils.hasLoginData(email, password)) {
 
-                    // get DB instance
                     database = DBUserMovie.getInstance(LoginActivity.this);
-
-                    // start background threads for communication with DB
-                    // find or create user in DB
-                    new RetreiveOrCreateUser(LoginActivity.this, userId)
-                            .execute(emailString, passString);
-
-                    // rest of this thread is now in onPostExecute
-
+                    fetchUser(email, password); // starting point
                 } else {
-                    Toast.makeText(LoginActivity.this, "something happened", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "error during onClick/hasLoginData check");
+                    Toast.makeText(LoginActivity.this, "Email and password, please",
+                            Toast.LENGTH_LONG).show();
                 }
+
             }
         });
 
     }
 
-    // AsyncTask --> only for short(er) tasks!
+    // the created interface
+    // since this interface needs to be present in both GetUser task and CreateUser taks
+    // better to define it like so, than to make it anonymous in task constructor
+    FindUser usInterface = new FindUser() {
+        @Override
+        public void userFound(long id) {
+            // change activity
+            Log.e(TAG, "INTERFACE USER ID IS " + id);
+            changeActivity(id);
+        }
 
+        @Override
+        public void userNotFound() {
+            // start another async task to create a user
+            String emailForCreation = etEmail.getText().toString();
+            String passwordForCreation = etPassword.getText().toString();
+            CreateUserTask createUser = new CreateUserTask(userId, database, usInterface);
+            createUser.execute(emailForCreation, passwordForCreation);
+        }
+    };
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
+    // some more helper methods
+    public void fetchUser(String email, String password) {
+        GetUserTask getUser = new GetUserTask(userId, database, usInterface);
+        getUser.execute(email, password);
     }
 
-    private static class RetreiveOrCreateUser extends AsyncTask<String, Void, Long> {
+    public void changeActivity(long userId) {
+     // create intent
+        Log.e(TAG, "CHANGE ACT USER ID " + userId);
+     Intent intent = new Intent(LoginActivity.this, ListsActivity.class);
+     // pass value with intent
+     intent.putExtra(EXTRA_ID, userId);
+     // start new activity via intent, obvs
+     startActivity(intent);
+     // finish this activity
+     finish();
+    }
 
-        private WeakReference<LoginActivity> activityReference;
+    // finally, the two async tasks the interface works with
+    private static class GetUserTask extends AsyncTask<String, Void, Long> {
+
+        // this taks will need: userId, database, interface
+        private FindUser userInterface;
         private long userId;
-        private Context context;
+        private DBUserMovie database;
 
-        // since context must be passed in for intent, weak reference unnecessary?
-        RetreiveOrCreateUser(LoginActivity context, long userId) {
-            activityReference = new WeakReference<>(context);
+        public GetUserTask(long userId, DBUserMovie database, FindUser userInterface) {
             this.userId = userId;
-            this.context = context.getApplicationContext();
+            this.database = database;
+            this.userInterface = userInterface;
         }
 
-
-        // get from database
         @Override
         protected Long doInBackground(String... strings) {
-            userId = activityReference.get().database.getUserDao().getUserIdByEmail(strings[0]);
-            Log.d("Finding by email", "found: " + userId);
-            if (userId <= 0 ) {
-                userId = activityReference.get().database.getUserDao().addUser(new User(strings[0], strings[1]));
-                return userId;
-            }
-            Log.d("from bkg", "userId is now: " + userId);
+
+            userId = database.getUserDao().getUserIdByEmail(strings[0]);
+
             return userId;
         }
-
-        // doInBackground returns to onPostExecute, passes its return (which is also the userId from main)
-        // onPostExecute runs in main thread
 
         @Override
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
-            Log.d("Async/passed to onPost", "id: " + userId);
+            Log.e(TAG, "FOUND USER ID IS " + userId);
 
-            // start new activity
-            Intent intent = new Intent(context, ListsActivity.class);
-            intent.putExtra(EXTRA_ID, userId);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-
-            // this activity is still open?
+            if (this.userInterface != null ) {
+                if (userId > 0) {
+                    this.userInterface.userFound(userId);
+                } else {
+                    this.userInterface.userNotFound();
+                }
+            }
         }
     }
 
-}
+    private static class CreateUserTask extends AsyncTask<String, Void, Long> {
 
+        // again this task needs: userId, database, interface
+        private long userId;
+        private DBUserMovie database;
+        private FindUser usInterface;
+
+        public CreateUserTask(long userId, DBUserMovie database, FindUser usInterface){
+            this.userId = userId;
+            this.database = database;
+            this.usInterface = usInterface;
+        }
+
+
+        @Override
+        protected Long doInBackground(String... strings) {
+
+            userId = database.getUserDao().addUser(new User(strings[0], strings[1]));
+
+            return userId;
+        }
+
+        @Override
+        protected void onPostExecute(Long userId) {
+            super.onPostExecute(userId);
+            Log.e(TAG, "CREATED USER ID IS " + userId);
+            if (this.usInterface != null) {
+                this.usInterface.userFound(userId);
+            }
+        }
+    }
+}

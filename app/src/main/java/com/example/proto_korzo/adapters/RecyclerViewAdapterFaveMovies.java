@@ -1,4 +1,4 @@
-package com.example.proto_korzo.activities;
+package com.example.proto_korzo.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

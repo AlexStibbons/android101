@@ -1,8 +1,9 @@
-package com.example.proto_korzo.activities;
+package com.example.proto_korzo.graveyard;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,14 +14,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
+import com.example.proto_korzo.activities.ListsActivity;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.User;
 
-public class LoginActivity2 extends AppCompatActivity  {
+public class LoginActivity_MESSY_INTERFACE extends AppCompatActivity  {
 
-    private static final String TAG = "LoginActivity with interface";
-    private static final String EXTRA_ID = "com.example.proto_korzo.LoginActivity2.UserId";
+    private static final String TAG = "LoginActivity_MESSY_INTERFACE";
+    private static final String EXTRA_ID = "com.example.proto_korzo.LoginActivity_MESSY_INTERFACE.UserId";
 
+    // declare necessary variables
     EditText emailInput;
     EditText passwordInput;
     Button enter;
@@ -33,6 +36,7 @@ public class LoginActivity2 extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
 
+        // find the variables in the layout
         emailInput = (EditText) findViewById(R.id.login_email);
         passwordInput = (EditText) findViewById(R.id.login_password);
         enter = (Button) findViewById(R.id.btn_enter);
@@ -42,14 +46,18 @@ public class LoginActivity2 extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
 
+                // get input values
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
 
+                // if and only if the inputs are valid, get an instance of the
+                // database, and
+                // start the process of finding/creating the user
                 if (Utils.hasLoginData(email, password)) {
-                    database = DBUserMovie.getInstance(LoginActivity2.this);
+                    database = DBUserMovie.getInstance(LoginActivity_MESSY_INTERFACE.this);
                     findUser(email, password);
                 } else {
-                    Toast.makeText(LoginActivity2.this,
+                    Toast.makeText(LoginActivity_MESSY_INTERFACE.this,
                             "Please, enter email and password", Toast.LENGTH_LONG).show();
                 }
             }
@@ -57,20 +65,44 @@ public class LoginActivity2 extends AppCompatActivity  {
 
     }
 
+    // this one starts the chain of going down async tasks
     public void findUser(String email, String password){
-        AsyncTask findUser = new GetUserTask(userId, database, findUserInterface);
+        GetUserTask findUser = new GetUserTask(userId, database, findUserInterface);
         findUser.execute(email);
     }
 
-
+    // an intent that needs to:
+    // 1. change activity once the user is valid
+    // 2. close the login activity
     public void intentListsActivity(long userId){
 
-        Intent intent = new Intent(LoginActivity2.this, ListsActivity.class);
+        Log.e(TAG, "CHANGE ACT USER ID IS " + userId );
+        Intent intent = new Intent(LoginActivity_MESSY_INTERFACE.this, ListsActivity.class);
         intent.putExtra(EXTRA_ID, userId);
         startActivity(intent);
+        finish();
     }
 
+    // this is the interface [nested in the GetUser Async Task]
+    // created outside the task, so the methods can access all the necessary
+    // varibles/methods
+    GetUserTask.FindUser findUserInterface = new GetUserTask.FindUser() {
+        @Override
+        public void userFound(long id) {
+            Log.e(TAG, "INTERFACE ID: " + id);
+            intentListsActivity(id);
+        }
 
+        @Override
+        public void userNotFound() {
+            String email2 = emailInput.getText().toString();
+            String password2 = passwordInput.getText().toString();
+            CreateUserTask createUser = new CreateUserTask(userId, database, findUserInterface);
+            createUser.execute(email2, password2);
+        }
+    };
+
+    // the first async task - find an existing user
     private static class GetUserTask extends AsyncTask<String, Void, Long>{
 
         public interface FindUser {
@@ -99,11 +131,15 @@ public class LoginActivity2 extends AppCompatActivity  {
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
 
+            Log.e(TAG, "FOUND USER ID IS " + userId);
+
             if (this.findUserInterface != null) {
 
                 if (userId > 0) {
                     this.findUserInterface.userFound(userId);
                 } else {
+                    // this starts another async task
+                    // as seen above, on overriding interface's methods
                     this.findUserInterface.userNotFound();
                 }
 
@@ -111,20 +147,6 @@ public class LoginActivity2 extends AppCompatActivity  {
 
         }
     }
-    GetUserTask.FindUser findUserInterface = new GetUserTask.FindUser() {
-        @Override
-        public void userFound(long id) {
-            intentListsActivity(id);
-        }
-
-        @Override
-        public void userNotFound() {
-            String email2 = emailInput.getText().toString();
-            String password2 = passwordInput.getText().toString();
-            AsyncTask createUser = new CreateUserTask(userId, database, findUserInterface);
-            createUser.execute(email2, password2);
-        }
-    };
 
     private static class CreateUserTask extends AsyncTask<String, Void, Long> {
 
@@ -148,6 +170,11 @@ public class LoginActivity2 extends AppCompatActivity  {
         @Override
         protected void onPostExecute(Long userId) {
             super.onPostExecute(userId);
+            // since the user is definitely presend, and we got the user's Id
+            // call the userFound method of the interface
+            // the userFound method calls the intent which opens
+            // a new activity and closes this one
+            Log.e(TAG, "CREATED USER ID IS " + userId);
             this.findUserInterface.userFound(userId);
         }
     }

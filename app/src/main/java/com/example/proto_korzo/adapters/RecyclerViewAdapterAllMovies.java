@@ -1,4 +1,4 @@
-package com.example.proto_korzo.activities;
+package com.example.proto_korzo.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -100,6 +100,12 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
     @Override
     public int getItemCount() {
         return mDummyMovies.size();
+    }
+
+    public void setList(List<Movie> movies) {
+        mDummyMovies.clear();
+        mDummyMovies.addAll(movies);
+        notifyDataSetChanged();
     }
 
     public /*static?*/ class ViewHolder extends RecyclerView.ViewHolder {

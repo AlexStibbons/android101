@@ -1,11 +1,11 @@
-package com.example.proto_korzo.activities;
+package com.example.proto_korzo.adapters;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.proto_korzo.activities.fragments.AllMoviesFragment;
-import com.example.proto_korzo.activities.fragments.FaveMoviesFragment;
+import com.example.proto_korzo.fragments.AllMoviesFragment;
+import com.example.proto_korzo.fragments.FaveMoviesFragment;
 
 public class ViewPageAdapter extends FragmentPagerAdapter {
 
@@ -13,12 +13,12 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
 
     private Fragment[] fragments;
 
-    public ViewPageAdapter(FragmentManager fragmentManager){
+    public ViewPageAdapter(FragmentManager fragmentManager, long id){
         super(fragmentManager);
 
         fragments = new Fragment[] {
-                new AllMoviesFragment(),
-                new FaveMoviesFragment()
+                new AllMoviesFragment(id),
+                new FaveMoviesFragment(id)
         };
     }
 
