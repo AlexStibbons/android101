@@ -29,20 +29,21 @@ public class AllMoviesFragment extends Fragment {
     // *** interface ***
     public interface FetchMovies {
         void onAllMoviesFetched(List<Movie> allMovies);
+
         void onFaveMoviesFetched(List<Movie> userFaves);
     }
 
     private final long id;
 
     private List<Movie> dummyMovies = new ArrayList<>();
-    List<Movie> userFavesMovies  = new ArrayList<>();
+    List<Movie> userFavesMovies = new ArrayList<>();
     List<Long> userFavesIds = new ArrayList<>();
     private DBUserMovie database;
 
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
 
-    public AllMoviesFragment(long id){
+    public AllMoviesFragment(long id) {
         super();
         this.id = id;
     }
@@ -66,10 +67,8 @@ public class AllMoviesFragment extends Fragment {
 
         // 1. fetch all movies - AsyncTask 1
         // 2. fetch user favourites - Async Task 2
-        initFetchingMovies();
         // 3. initRecyclerView()
-        initRecyclerView();
-
+        initFetchingMovies();
         return rootView;
     }
 
@@ -106,7 +105,7 @@ public class AllMoviesFragment extends Fragment {
 
     }
 
-    private void displayList(List<Movie> movies){
+    private void displayList(List<Movie> movies) {
         adapter.setList(movies);
     }
 

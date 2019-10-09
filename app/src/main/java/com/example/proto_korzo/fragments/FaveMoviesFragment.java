@@ -74,7 +74,7 @@ public class FaveMoviesFragment extends Fragment {
         }
     };
 
-    public void fetchFaves(){
+    public void fetchFaves() {
         // start Async task
         FetchFavesTask fetchFavesTask = new FetchFavesTask(favesInterface, database);
         fetchFavesTask.execute(id);
@@ -88,7 +88,6 @@ public class FaveMoviesFragment extends Fragment {
         RecyclerViewAdapterFaveMovies adapter = new RecyclerViewAdapterFaveMovies(userFaves, this.getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-
 
 
     }

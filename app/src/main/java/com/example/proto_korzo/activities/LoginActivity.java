@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     // *** interface ***
     public interface FindUser {
         void userFound(long id);
+
         void userNotFound();
     }
 
@@ -107,15 +108,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void changeActivity(long userId) {
-     // create intent
+        // create intent
         Log.e(TAG, "CHANGE ACT USER ID " + userId);
-     Intent intent = new Intent(LoginActivity.this, ListsActivity.class);
-     // pass value with intent
-     intent.putExtra(EXTRA_ID, userId);
-     // start new activity via intent, obvs
-     startActivity(intent);
-     // finish this activity
-     finish();
+        Intent intent = new Intent(LoginActivity.this, ListsActivity.class);
+        // pass value with intent
+        intent.putExtra(EXTRA_ID, userId);
+        // start new activity via intent, obvs
+        startActivity(intent);
+        // finish this activity
+        finish();
     }
 
     // finally, the two async tasks the interface works with
@@ -144,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                 // add to database
                 String img1 = "https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1";
                 String img2 = "https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1";
-                String img3 ="https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1";
+                String img3 = "https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1";
                 String img4 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/07/regret-return_600px.png";
                 String img5 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png";
 
@@ -161,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                         new Movie(97, "Title 10", "desc 10", img5),
                         new Movie(675, "Title 11", "desc 11", img1),
                         new Movie(624, "Title 12", "desc 12", img2),
-                        new Movie(999,"Title 13", "desc 13", img3),
+                        new Movie(999, "Title 13", "desc 13", img3),
                         new Movie(956, "Title 14", "desc 14", img4),
                         new Movie(12567, "Title 15", "desc 15", img5)};
 
@@ -171,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
             userId = database.getUserDao().getUserIdByEmail(strings[0]);
 
             // one dummy favourite
-            if (userId > 0 ) {
+            if (userId > 0) {
                 database.getUserMovieDao().addUserMovie(new UserMovieJoin(userId, 15));
             }
 
@@ -183,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(userId);
             Log.e(TAG, "FOUND USER ID IS " + userId);
 
-            if (this.userInterface != null ) {
+            if (this.userInterface != null) {
                 if (userId > 0) {
                     this.userInterface.userFound(userId);
                 } else {
@@ -200,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
         private DBUserMovie database;
         private FindUser usInterface;
 
-        public CreateUserTask(long userId, DBUserMovie database, FindUser usInterface){
+        public CreateUserTask(long userId, DBUserMovie database, FindUser usInterface) {
             this.userId = userId;
             this.database = database;
             this.usInterface = usInterface;
