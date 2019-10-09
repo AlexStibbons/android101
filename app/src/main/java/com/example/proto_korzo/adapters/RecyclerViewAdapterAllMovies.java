@@ -129,17 +129,13 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         }
     }
 
+    // shorten, make better
     private /*static*/ boolean isFave(Movie movie) {
-/*        for (Movie item:mUserFaves){
+        for (Movie item:mUserFaves){
             if (item.getTitle().equals(movie.getTitle()))
                 return true;
         }
 
-        return  false;*/
-
-        if (mUserFaves.contains(movie)) {
-            return true;
-        }
-        return false;
+        return  false;
     }
 }

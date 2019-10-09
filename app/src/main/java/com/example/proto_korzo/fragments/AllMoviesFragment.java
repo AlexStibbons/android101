@@ -1,5 +1,6 @@
 package com.example.proto_korzo.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,26 +16,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterAllMovies;
+import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-// 1. get userId from ListsActivity
-// 2. get movies from external API [mock list atm]
-// 3. check which ones are favourite movies
-// 4. show list in recycler view
-// 4a. movies which are among favourites have a full favourite icon
 
 public class AllMoviesFragment extends Fragment {
 
     private static final String TAG = "AllMoviesFragment";
 
+    // *** interface ***
+    public interface FetchMovies {
+        void onAllMoviesFetched(List<Movie> allMovies);
+        void onFaveMoviesFetched(List<Movie> userFaves);
+    }
+
     private final long id;
 
     private List<Movie> dummyMovies = new ArrayList<>();
-    List<Movie> userFaves  = new ArrayList<>();
+    List<Movie> userFavesMovies  = new ArrayList<>();
+    List<Long> userFavesIds = new ArrayList<>();
+    private DBUserMovie database;
 
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
@@ -51,6 +54,8 @@ public class AllMoviesFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        database = DBUserMovie.getInstance(getActivity());
+
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         Log.e(TAG, "MOVIES FRAGMENT GOTTEN ID: " + id);
@@ -59,47 +64,43 @@ public class AllMoviesFragment extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
-        initDummyMovies();
+        // 1. fetch all movies - AsyncTask 1
+        // 2. fetch user favourites - Async Task 2
+        initFetchingMovies();
+        // 3. initRecyclerView()
+        initRecyclerView();
 
         return rootView;
     }
 
-    private void initDummyMovies() {
-        Log.d(TAG, "initImageBitmaps: prepping bitmaps");
+    FetchMovies moviesInterface = new FetchMovies() {
 
-        String img1 = "https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1";
-        String img2 = "https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1";
-        String img3 ="https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1";
-        String img4 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/07/regret-return_600px.png";
-        String img5 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png";
+        @Override
+        public void onAllMoviesFetched(List<Movie> all) {
+            dummyMovies.clear();
+            dummyMovies.addAll(all);
+            FetchFaveMoviesTask fetchFavesTask = new FetchFaveMoviesTask(moviesInterface, database);
+            fetchFavesTask.execute(id);
+        }
 
-        List<Movie> input = Arrays.asList(
-                new Movie("Title 1 ", "desc 1", img1),
-                new Movie("Title 2", "desc 2", img2),
-                new Movie("Title 3", "desc 3", img3),
-                new Movie("Title 4", "desc 4", img4),
-                new Movie("Title 5", "desc 5", img5),
-                new Movie("Title 6", "desc 6", img1),
-                new Movie("Title 7", "desc 7", img2),
-                new Movie("Title 8", "desc 8", img3),
-                new Movie("Title 9", "desc 9", img4),
-                new Movie("Title 10", "desc 10", img5),
-                new Movie("Title 11", "desc 11", img1),
-                new Movie("Title 12", "desc 12", img2),
-                new Movie("Title 13", "desc 13", img3),
-                new Movie("Title 14", "desc 14", img4),
-                new Movie("Title 15", "desc 15", img5));
+        @Override
+        public void onFaveMoviesFetched(List<Movie> faves) {
+            userFavesMovies.clear();
+            userFavesMovies.addAll(faves);
+            Log.e(TAG, "onFaveMoviesFetched: SIZE IS " + userFavesMovies.size());
+            initRecyclerView();
+        }
+    };
 
-        dummyMovies.addAll(input);
-        userFaves.add(input.get(0));
-        initRecyclerView();
+    private void initFetchingMovies() {
+        FetchAllMovies fetchAllMoviesTask = new FetchAllMovies(moviesInterface, database);
+        fetchAllMoviesTask.execute();
     }
-
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: started");
 
-        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFaves, this.getActivity());
+        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies, this.getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
@@ -109,6 +110,58 @@ public class AllMoviesFragment extends Fragment {
         adapter.setList(movies);
     }
 
+    // AsyncTask to Fetch All Movies from DB
+    private class FetchAllMovies extends AsyncTask<Void, Void, List<Movie>> {
 
+        private FetchMovies fetchInterface;
+        private DBUserMovie database;
+
+        public FetchAllMovies(FetchMovies fetchInterface, DBUserMovie database) {
+            this.fetchInterface = fetchInterface;
+            this.database = database;
+        }
+
+        @Override
+        protected List<Movie> doInBackground(Void... voids) {
+
+            List<Movie> allMovies = database.getMovieDao().getAllMovies();
+
+            return allMovies;
+        }
+
+        @Override
+        protected void onPostExecute(List<Movie> allMovies) {
+            super.onPostExecute(allMovies);
+            this.fetchInterface.onAllMoviesFetched(allMovies);
+        }
+    }
+
+    // AsyncTask to Fetch Faves from DB
+
+    private class FetchFaveMoviesTask extends AsyncTask<Long, Void, List<Movie>> {
+
+        private FetchMovies fetchInterface;
+        private DBUserMovie database;
+
+        public FetchFaveMoviesTask(FetchMovies fetchInterface, DBUserMovie database) {
+            this.fetchInterface = fetchInterface;
+            this.database = database;
+        }
+
+        @Override
+        protected List<Movie> doInBackground(Long... longs) {
+
+            List<Movie> faveMovies = database.getUserMovieDao().getMoviesByUserId(longs[0]);
+
+            return faveMovies;
+        }
+
+        @Override
+        protected void onPostExecute(List<Movie> faveMovies) {
+            super.onPostExecute(faveMovies);
+            Log.e(TAG, "FAVES SIZE IS " + faveMovies.size());
+            this.fetchInterface.onFaveMoviesFetched(faveMovies);
+        }
+    }
 
 }

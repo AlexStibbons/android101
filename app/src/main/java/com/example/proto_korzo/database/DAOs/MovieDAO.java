@@ -30,4 +30,7 @@ public interface MovieDAO {
 
     @Update
     public void updateMovie(Movie movie);
+
+    @Insert
+    public void addMovieList(Movie... movies);
 }

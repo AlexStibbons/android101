@@ -14,7 +14,7 @@ import com.example.proto_korzo.database.model.User;
 import com.example.proto_korzo.database.model.UserMovieJoin;
 
 @Database(entities = {Movie.class, User.class, UserMovieJoin.class},
-        version = 2,
+        version = 3,
         exportSchema = false)
 public abstract class DBUserMovie extends RoomDatabase {
 
@@ -47,15 +47,5 @@ public abstract class DBUserMovie extends RoomDatabase {
     }
 
 
-    /* EXAMPLE:
-        To add things to the database we need to invoke:
-
-        RepoDatabase
-        .getInstance(context)
-        .getRepoDao()
-        .insert(new Repo(1, "Cool Repo Name", "url"));
-
-        but where??!?
-        */
 
 }

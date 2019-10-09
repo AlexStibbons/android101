@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Entity(tableName = "movies")
 public class Movie {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private long id;
 
     private String title;
@@ -29,7 +29,8 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(String title, String description, String imgUrl) {
+    public Movie(long id, String title, String description, String imgUrl) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.imgUrl = imgUrl;

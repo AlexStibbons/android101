@@ -15,7 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
+import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.database.model.User;
+import com.example.proto_korzo.database.model.UserMovieJoin;
+
+import java.util.List;
 
 // Login with interface callback
 // same as Login2, but more understandable
@@ -131,7 +135,45 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Long doInBackground(String... strings) {
 
+            // init dummy movies here
+
+            // if movie list is zero or isEmpty
+            List<Movie> dbMovies = database.getMovieDao().getAllMovies();
+            if (dbMovies.size() < 1) {
+                // create movies
+                // add to database
+                String img1 = "https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1";
+                String img2 = "https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1";
+                String img3 ="https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1";
+                String img4 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/07/regret-return_600px.png";
+                String img5 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png";
+
+                Movie[] input = {
+                        new Movie(1, "Title 1 ", "desc 1", img1),
+                        new Movie(256, "Title 2", "desc 2", img2),
+                        new Movie(2, "Title 3", "desc 3", img3),
+                        new Movie(5689, "Title 4", "desc 4", img4),
+                        new Movie(98, "Title 5", "desc 5", img5),
+                        new Movie(123, "Title 6", "desc 6", img1),
+                        new Movie(555, "Title 7", "desc 7", img2),
+                        new Movie(95674, "Title 8", "desc 8", img3),
+                        new Movie(15, "Title 9", "desc 9", img4),
+                        new Movie(97, "Title 10", "desc 10", img5),
+                        new Movie(675, "Title 11", "desc 11", img1),
+                        new Movie(624, "Title 12", "desc 12", img2),
+                        new Movie(999,"Title 13", "desc 13", img3),
+                        new Movie(956, "Title 14", "desc 14", img4),
+                        new Movie(12567, "Title 15", "desc 15", img5)};
+
+                database.getMovieDao().addMovieList(input);
+            }
+
             userId = database.getUserDao().getUserIdByEmail(strings[0]);
+
+            // one dummy favourite
+            if (userId > 0 ) {
+                database.getUserMovieDao().addUserMovie(new UserMovieJoin(userId, 15));
+            }
 
             return userId;
         }
