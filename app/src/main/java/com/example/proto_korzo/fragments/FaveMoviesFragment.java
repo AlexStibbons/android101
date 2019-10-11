@@ -1,6 +1,5 @@
 package com.example.proto_korzo.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterFaveMovies;
+import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 
@@ -26,15 +26,12 @@ public class FaveMoviesFragment extends Fragment {
 
     private static final String TAG = "FaveMoviesFragment";
 
-    // *** interface ***
-    public interface FetchFaves {
-        void onFavesFetched(List<Movie> userFaves);
-    }
-
     private DBUserMovie database;
     private long id;
     private List<Movie> userFaves = new ArrayList<>();
+
     RecyclerView recyclerView;
+    RecyclerViewAdapterFaveMovies adapter;
 
     public FaveMoviesFragment(long id) {
         this.id = id;
@@ -55,67 +52,49 @@ public class FaveMoviesFragment extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
-        //initDummyMovies();
         fetchFaves();
-
-        initRecyclerView();
 
         return rootView;
     }
 
-
-    FetchFaves favesInterface = new FetchFaves() {
-
-        @Override
-        public void onFavesFetched(List<Movie> faves) {
-            userFaves.clear();
-            userFaves.addAll(faves);
-            initRecyclerView();
-        }
-    };
-
     public void fetchFaves() {
-        // start Async task
-        FetchFavesTask fetchFavesTask = new FetchFavesTask(favesInterface, database);
-        fetchFavesTask.execute(id);
-
+        AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
+            @Override
+            public void onMoviesFetched(List<Movie> movies) {
+                userFaves.clear();
+                userFaves.addAll(movies);
+                initRecyclerView();
+            }
+        });
     }
 
     private void initRecyclerView() {
 
         Log.d(TAG, "initRecyclerView: started");
 
-        RecyclerViewAdapterFaveMovies adapter = new RecyclerViewAdapterFaveMovies(userFaves, this.getActivity());
+        adapter = new RecyclerViewAdapterFaveMovies(userFaves,
+                this.getActivity(), listener);
+
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-
-
     }
 
-    private class FetchFavesTask extends AsyncTask<Long, Void, List<Movie>> {
-
-        private FetchFaves favesInterface;
-        private DBUserMovie database;
-
-        public FetchFavesTask(FetchFaves favesInterface, DBUserMovie database) {
-            this.favesInterface = favesInterface;
-            this.database = database;
+    Listeners.OnFaveClick listener = new Listeners.OnFaveClick() {
+        @Override
+        public void onFave(long movieId) {
+            // this has no functionality here
+            // all of them are favourites
+            // they can only be unfaved
         }
 
         @Override
-        protected List<Movie> doInBackground(Long... longs) {
-
-            List<Movie> faves = database.getUserMovieDao().getMoviesByUserId(longs[0]);
-
-            return faves;
+        public void onUnfave(long movieId) {
+            AsyncTaskManager.removeFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
+                @Override
+                public void onMoviesFetched(List<Movie> movies) {
+                    adapter.setFaveMovies(movies);
+                }
+            });
         }
-
-        @Override
-        protected void onPostExecute(List<Movie> faves) {
-            super.onPostExecute(faves);
-
-            this.favesInterface.onFavesFetched(faves);
-        }
-    }
-
+    };
 }

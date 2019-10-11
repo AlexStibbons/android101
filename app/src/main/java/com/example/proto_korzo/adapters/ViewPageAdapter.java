@@ -9,8 +9,6 @@ import com.example.proto_korzo.fragments.FaveMoviesFragment;
 
 public class ViewPageAdapter extends FragmentPagerAdapter {
 
-    // pageadapter should pass data from activity to fragments?
-
     private Fragment[] fragments;
 
     public ViewPageAdapter(FragmentManager fragmentManager, long id){

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.database.model.Movie;
+import com.example.proto_korzo.fragments.Listeners;
 
 import java.util.List;
 
@@ -28,11 +29,14 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
     private List<Movie> mDummyMovies;
     private List<Movie> mUserFaves;
     private Context mContext;
+    private Listeners.OnFaveClick onFaveInterface;
 
-    public RecyclerViewAdapterAllMovies(List<Movie> mDummyMovies, List<Movie> mUserFaves, Context mContext) {
+    public RecyclerViewAdapterAllMovies(List<Movie> mDummyMovies, List<Movie> mUserFaves,
+                                        Context mContext, Listeners.OnFaveClick onFaveInterface) {
         this.mDummyMovies = mDummyMovies;
         this.mUserFaves = mUserFaves;
         this.mContext = mContext;
+        this.onFaveInterface = onFaveInterface;
     }
 
     @NonNull
@@ -85,11 +89,12 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    // create usermovie join object
-                    mUserFaves.add(mDummyMovies.get(position));
+                    onFaveInterface.onFave(mDummyMovies.get(position).getId());
+                    //mUserFaves.add(mDummyMovies.get(position));
                     Toast.makeText(mContext, "checked this: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 } else {
-                    mUserFaves.remove(mDummyMovies.get(position));
+                    onFaveInterface.onUnfave(mDummyMovies.get(position).getId());
+                    //mUserFaves.remove(mDummyMovies.get(position));
                     Toast.makeText(mContext, "UNchecked this: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 }
 
@@ -102,9 +107,15 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         return mDummyMovies.size();
     }
 
-    public void setList(List<Movie> movies) {
+    public void setAllMoviesList(List<Movie> movies) {
         mDummyMovies.clear();
         mDummyMovies.addAll(movies);
+        notifyDataSetChanged();
+    }
+
+    public void setFaveMovies(List<Movie> faves) {
+        mUserFaves.clear();
+        mUserFaves.addAll(faves);
         notifyDataSetChanged();
     }
 
@@ -129,12 +140,22 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    // shorten, make better
+    // change to stream
     private /*static*/ boolean isFave(Movie movie) {
         for (Movie item:mUserFaves){
             if (item.getTitle().equals(movie.getTitle()))
                 return true;
         }
+
+        // stream is better
+
+       /* Optional<Movie> fave = mUserFaves.stream()
+        						.filter(m -> m.id == movie.id)
+        						.findFirst();
+        if (fave.isPresent()){
+        	return true;
+        }*/
+        						
 
         return  false;
     }

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.database.model.Movie;
+import com.example.proto_korzo.fragments.Listeners;
 
 import java.util.List;
 
@@ -24,10 +25,12 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
 
     private List<Movie> mFaveMovies;
     private Context mContext;
+    private Listeners.OnFaveClick onFaveListener;
 
-    public RecyclerViewAdapterFaveMovies(List<Movie> mFaveMovies, Context mContext) {
+    public RecyclerViewAdapterFaveMovies(List<Movie> mFaveMovies, Context mContext, Listeners.OnFaveClick onFaveListener) {
         this.mFaveMovies = mFaveMovies;
         this.mContext = mContext;
+        this.onFaveListener = onFaveListener;
     }
 
     @NonNull
@@ -74,13 +77,11 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
                     // all of them are checked here
                     Toast.makeText(mContext, "checked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 } else {
-                    // if unchecked
-                    // remove from DB
-                    // remove from list
                     Toast.makeText(mContext, "UNchecked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
-                    mFaveMovies.remove(mFaveMovies.get(position)); // remove item
-                    notifyItemRemoved(position); // notify it's removed
-                    notifyItemRangeChanged(position, mFaveMovies.size()); // notify index changes
+                    onFaveListener.onUnfave(mFaveMovies.get(position).getId()); // remove item
+                    //mFaveMovies.remove(mFaveMovies.get(position));
+                    notifyItemRemoved(position); // notify it's removed ?
+                    notifyItemRangeChanged(position, mFaveMovies.size()); // notify index changes ?
                 }
             }
         });
@@ -89,6 +90,12 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
     @Override
     public int getItemCount() {
         return mFaveMovies.size();
+    }
+
+    public void setFaveMovies(List<Movie> newFaves) {
+        mFaveMovies.clear();
+        mFaveMovies.addAll(newFaves);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

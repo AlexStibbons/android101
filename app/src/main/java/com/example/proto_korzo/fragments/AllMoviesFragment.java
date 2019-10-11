@@ -1,6 +1,5 @@
 package com.example.proto_korzo.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterAllMovies;
+import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 
@@ -26,14 +26,15 @@ public class AllMoviesFragment extends Fragment {
 
     private static final String TAG = "AllMoviesFragment";
 
-    // *** interface ***
+    // *** interface/listener for fetching movies ***
     public interface FetchMovies {
         void onAllMoviesFetched(List<Movie> allMovies);
 
         void onFaveMoviesFetched(List<Movie> userFaves);
     }
 
-    private final long id;
+
+    private final long id; // userId
 
     private List<Movie> dummyMovies = new ArrayList<>();
     List<Movie> userFavesMovies = new ArrayList<>();
@@ -68,99 +69,77 @@ public class AllMoviesFragment extends Fragment {
         // 1. fetch all movies - AsyncTask 1
         // 2. fetch user favourites - Async Task 2
         // 3. initRecyclerView()
-        initFetchingMovies();
+        fetchMovies();
+
         return rootView;
     }
 
-    FetchMovies moviesInterface = new FetchMovies() {
+    private void fetchMovies() {
 
-        @Override
-        public void onAllMoviesFetched(List<Movie> all) {
-            dummyMovies.clear();
-            dummyMovies.addAll(all);
-            FetchFaveMoviesTask fetchFavesTask = new FetchFaveMoviesTask(moviesInterface, database);
-            fetchFavesTask.execute(id);
-        }
+        AsyncTaskManager.fetchAllMovies(database, new AsyncTaskManager.TaskListener() {
+            @Override
+            public void onMoviesFetched(List<Movie> movies) {
+                dummyMovies.clear();
+                dummyMovies.addAll(movies);
 
-        @Override
-        public void onFaveMoviesFetched(List<Movie> faves) {
-            userFavesMovies.clear();
-            userFavesMovies.addAll(faves);
-            Log.e(TAG, "onFaveMoviesFetched: SIZE IS " + userFavesMovies.size());
-            initRecyclerView();
-        }
-    };
+                // now start another async task
+                AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
+                    @Override
+                    public void onMoviesFetched(List<Movie> movies) {
+                        userFavesMovies.clear();
+                        userFavesMovies.addAll(movies);
+                        initRecyclerView();
+                    }
+                });
 
-    private void initFetchingMovies() {
-        FetchAllMovies fetchAllMoviesTask = new FetchAllMovies(moviesInterface, database);
-        fetchAllMoviesTask.execute();
+            }
+        });
     }
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: started");
 
-        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies, this.getActivity());
+        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies,
+                this.getActivity(), faveClickListener); // the fragment itself "is" an interface
+        // because it inherits the DefaultFragment
+        // which implements the interface, or if it
+        // implements the interface
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
     }
 
-    private void displayList(List<Movie> movies) {
-        adapter.setList(movies);
-    }
 
-    // AsyncTask to Fetch All Movies from DB
-    private class FetchAllMovies extends AsyncTask<Void, Void, List<Movie>> {
+    Listeners.OnFaveClick faveClickListener = new Listeners.OnFaveClick() {
+        @Override
+        public void onFave(long movieId) {
+            AsyncTaskManager.setFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
+                @Override
+                public void onMoviesFetched(List<Movie> movies) {
+                    //userFavesMovies.clear();
+                    //userFavesMovies.addAll(movies);
 
-        private FetchMovies fetchInterface;
-        private DBUserMovie database;
+                    // why not change list in fragment [userFaveMovies], then pass that list?
+                    // when that one is passed to adapter, view does not work properly
+                    adapter.setFaveMovies(movies);
 
-        public FetchAllMovies(FetchMovies fetchInterface, DBUserMovie database) {
-            this.fetchInterface = fetchInterface;
-            this.database = database;
+                    // also, the entire list should not be changed
+                    // just the one movie
+                }
+            });
         }
 
         @Override
-        protected List<Movie> doInBackground(Void... voids) {
-
-            List<Movie> allMovies = database.getMovieDao().getAllMovies();
-
-            return allMovies;
+        public void onUnfave(long movieId) {
+            AsyncTaskManager.removeFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
+                @Override
+                public void onMoviesFetched(List<Movie> movies) {
+                    // userFavesMovies.clear();
+                    //userFavesMovies.addAll(movies);
+                    adapter.setFaveMovies(movies);
+                }
+            });
         }
-
-        @Override
-        protected void onPostExecute(List<Movie> allMovies) {
-            super.onPostExecute(allMovies);
-            this.fetchInterface.onAllMoviesFetched(allMovies);
-        }
-    }
-
-    // AsyncTask to Fetch Faves from DB
-
-    private class FetchFaveMoviesTask extends AsyncTask<Long, Void, List<Movie>> {
-
-        private FetchMovies fetchInterface;
-        private DBUserMovie database;
-
-        public FetchFaveMoviesTask(FetchMovies fetchInterface, DBUserMovie database) {
-            this.fetchInterface = fetchInterface;
-            this.database = database;
-        }
-
-        @Override
-        protected List<Movie> doInBackground(Long... longs) {
-
-            List<Movie> faveMovies = database.getUserMovieDao().getMoviesByUserId(longs[0]);
-
-            return faveMovies;
-        }
-
-        @Override
-        protected void onPostExecute(List<Movie> faveMovies) {
-            super.onPostExecute(faveMovies);
-            Log.e(TAG, "FAVES SIZE IS " + faveMovies.size());
-            this.fetchInterface.onFaveMoviesFetched(faveMovies);
-        }
-    }
+    };
 
 }

@@ -17,7 +17,6 @@ import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.database.model.User;
-import com.example.proto_korzo.database.model.UserMovieJoin;
 
 import java.util.List;
 
@@ -171,10 +170,10 @@ public class LoginActivity extends AppCompatActivity {
 
             userId = database.getUserDao().getUserIdByEmail(strings[0]);
 
-            // one dummy favourite
+/*            // one dummy favourite
             if (userId > 0) {
                 database.getUserMovieDao().addUserMovie(new UserMovieJoin(userId, 15));
-            }
+            }*/
 
             return userId;
         }
