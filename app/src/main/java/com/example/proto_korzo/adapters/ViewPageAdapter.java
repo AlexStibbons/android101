@@ -34,9 +34,9 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "All";
+                return "All Movies";
             case 1:
-                return "To watch";
+                return "To Watch";
             default:
                 return "Tab";
         }
