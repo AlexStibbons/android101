@@ -1,5 +1,9 @@
 package com.example.proto_korzo.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
+import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterFaveMovies;
 import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
 import com.example.proto_korzo.database.DBUserMovie;
@@ -45,6 +50,10 @@ public class FaveMoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         database = DBUserMovie.getInstance(getActivity());
+
+        // register BR
+        IntentFilter intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
+        getContext().registerReceiver(br, intentFilter);
 
         Log.e(TAG, "FAVES FRAGMENT GOTTEN ID: " + id);
         TextView testy = rootView.findViewById(R.id.idView);
@@ -95,15 +104,31 @@ public class FaveMoviesFragment extends Fragment {
                     adapter.setFaveMovies(movies);
                 }
             });
+
+            getContext().sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
+        }
+
+        @Override
+        public void onMovieItemClick(long movieId, boolean isFave) {
+
         }
     };
 
-    // NO
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(br);
     }
+
+    BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
+                fetchFaves();
+            }
+
+        }
+    };
+
 }

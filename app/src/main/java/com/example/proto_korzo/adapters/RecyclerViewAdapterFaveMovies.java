@@ -75,13 +75,13 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // all of them are checked here
-                    Toast.makeText(mContext, "checked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(mContext, "checked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(mContext, "UNchecked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(mContext, "UNchecked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                     onFaveListener.onUnfave(mFaveMovies.get(position).getId()); // remove item
                     //mFaveMovies.remove(mFaveMovies.get(position));
-                    notifyItemRemoved(position); // notify it's removed ?
-                    notifyItemRangeChanged(position, mFaveMovies.size()); // notify index changes ?
+                    //notifyItemRemoved(position); // notify it's removed ?
+                    //notifyItemRangeChanged(position, mFaveMovies.size()); // notify index changes ?
                 }
             }
         });

@@ -30,6 +30,7 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
     private List<Movie> mUserFaves;
     private Context mContext;
     private Listeners.OnFaveClick onFaveInterface;
+    boolean isMovieFave;
 
     public RecyclerViewAdapterAllMovies(List<Movie> mDummyMovies, List<Movie> mUserFaves,
                                         Context mContext, Listeners.OnFaveClick onFaveInterface) {
@@ -61,8 +62,10 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
 
         if (isFave(mDummyMovies.get(position))) {
             holder.btnFave.setChecked(true);
+
         } else {
             holder.btnFave.setChecked(false);
+
         }
         // get the images & load them into image position
         Glide.with(mContext)
@@ -79,6 +82,8 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onClick(View v) {
                 // open movie activity
+                Log.e(TAG, "onMovieClick: is Fave? " + isMovieFave);
+                onFaveInterface.onMovieItemClick(mDummyMovies.get(position).getId(), isMovieFave);
                 Log.d(TAG, "onClick: clicked list item");
                 Toast.makeText(mContext, "Title: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
             }
@@ -90,10 +95,12 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     onFaveInterface.onFave(mDummyMovies.get(position).getId());
+                    notifyItemChanged(position, mDummyMovies.get(position));
                     //mUserFaves.add(mDummyMovies.get(position));
                     Toast.makeText(mContext, "checked this: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 } else {
                     onFaveInterface.onUnfave(mDummyMovies.get(position).getId());
+                    notifyItemChanged(position, mDummyMovies.get(position));
                     //mUserFaves.remove(mDummyMovies.get(position));
                     Toast.makeText(mContext, "UNchecked this: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 }
@@ -144,6 +151,7 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
     private /*static*/ boolean isFave(Movie movie) {
         for (Movie item:mUserFaves){
             if (item.getTitle().equals(movie.getTitle()))
+                //isMovieFave = true;
                 return true;
         }
 
@@ -156,7 +164,7 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         	return true;
         }*/
         						
-
+        //isMovieFave = false;
         return  false;
     }
 }

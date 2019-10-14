@@ -1,5 +1,9 @@
 package com.example.proto_korzo.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
+import com.example.proto_korzo.Utils;
+import com.example.proto_korzo.activities.MovieActivity;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterAllMovies;
 import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
+import com.example.proto_korzo.broadcastReceivers.FaveChangeBroadcast;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 
@@ -26,14 +33,6 @@ public class AllMoviesFragment extends Fragment {
 
     private static final String TAG = "AllMoviesFragment";
 
-    // *** interface/listener for fetching movies ***
-    public interface FetchMovies {
-        void onAllMoviesFetched(List<Movie> allMovies);
-
-        void onFaveMoviesFetched(List<Movie> userFaves);
-    }
-
-
     private final long id; // userId
 
     private List<Movie> dummyMovies = new ArrayList<>();
@@ -43,6 +42,8 @@ public class AllMoviesFragment extends Fragment {
 
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
+    FaveChangeBroadcast faveReceiver;
+    IntentFilter intentFilter;
 
     public AllMoviesFragment(long id) {
         super();
@@ -57,6 +58,11 @@ public class AllMoviesFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         database = DBUserMovie.getInstance(getActivity());
+
+        // register broadcast receiver
+        intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
+        //faveReceiver = new FaveChangeBroadcast();
+        getContext().registerReceiver(br, intentFilter);
 
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
@@ -127,6 +133,9 @@ public class AllMoviesFragment extends Fragment {
                     // just the one movie
                 }
             });
+            Log.e(TAG, "onFave: sending BR");
+            getContext().sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
+            Log.e(TAG, "onFave: SENT BR");
         }
 
         @Override
@@ -139,16 +148,45 @@ public class AllMoviesFragment extends Fragment {
                     adapter.setFaveMovies(movies);
                 }
             });
+            // send BR here
+            Log.e(TAG, "onUNFave: sending BR");
+            getContext().sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
+            Log.e(TAG, "onUNFave: SENT BR");
+        }
+
+        @Override
+        public void onMovieItemClick(long movieId, boolean isFave) {
+
+            Intent intent = new Intent(getContext(), MovieActivity.class);
+            // pass value with intent
+            // movie object + fave boolean
+            intent.putExtra("MovieIdExtra", movieId);
+            intent.putExtra("IsFaveExtra", isFave);
+            intent.putExtra("userIdExtra", id);
+            // start new activity via intent, obvs
+            startActivity(intent);
+
         }
     };
 
-    // NO
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            getFragmentManager().beginTransaction().detach(this).attach(this).commit();
-        }
+    public void onDestroy() {
+        super.onDestroy();
+
+        getContext().unregisterReceiver(br);
     }
 
+    BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
+                fetchMovies();
+                // because it receives it's own change
+                // it refreshes and pushed screen back to top
+                // that is, moves screen position all the way up
+                // as though it was created again [which it was]
+            }
+
+        }
+    };
 }
