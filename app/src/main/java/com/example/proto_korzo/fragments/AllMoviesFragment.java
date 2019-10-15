@@ -61,7 +61,6 @@ public class AllMoviesFragment extends Fragment {
 
         // register broadcast receiver
         intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
-        //faveReceiver = new FaveChangeBroadcast();
         getContext().registerReceiver(br, intentFilter);
 
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
@@ -72,9 +71,6 @@ public class AllMoviesFragment extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
-        // 1. fetch all movies - AsyncTask 1
-        // 2. fetch user favourites - Async Task 2
-        // 3. initRecyclerView()
         fetchMovies();
 
         return rootView;
@@ -133,9 +129,9 @@ public class AllMoviesFragment extends Fragment {
                     // just the one movie
                 }
             });
-            Log.e(TAG, "onFave: sending BR");
+
             getContext().sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
-            Log.e(TAG, "onFave: SENT BR");
+
         }
 
         @Override
@@ -148,24 +144,20 @@ public class AllMoviesFragment extends Fragment {
                     adapter.setFaveMovies(movies);
                 }
             });
-            // send BR here
-            Log.e(TAG, "onUNFave: sending BR");
+
             getContext().sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
-            Log.e(TAG, "onUNFave: SENT BR");
+
         }
 
         @Override
         public void onMovieItemClick(long movieId, boolean isFave) {
 
             Intent intent = new Intent(getContext(), MovieActivity.class);
-            // pass value with intent
-            // movie object + fave boolean
             intent.putExtra("MovieIdExtra", movieId);
             intent.putExtra("IsFaveExtra", isFave);
             intent.putExtra("userIdExtra", id);
-            // start new activity via intent, obvs
-            startActivity(intent);
 
+            startActivity(intent);
         }
     };
 
@@ -180,11 +172,12 @@ public class AllMoviesFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
-                fetchMovies();
-                // because it receives it's own change
-                // it refreshes and pushed screen back to top
-                // that is, moves screen position all the way up
-                // as though it was created again [which it was]
+                AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
+                    @Override
+                    public void onMoviesFetched(List<Movie> movies) {
+                       adapter.setFaveMovies(movies);
+                    }
+                });
             }
 
         }

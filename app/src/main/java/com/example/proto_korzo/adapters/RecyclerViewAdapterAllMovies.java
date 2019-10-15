@@ -1,14 +1,12 @@
 package com.example.proto_korzo.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -30,7 +28,6 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
     private List<Movie> mUserFaves;
     private Context mContext;
     private Listeners.OnFaveClick onFaveInterface;
-    boolean isMovieFave;
 
     public RecyclerViewAdapterAllMovies(List<Movie> mDummyMovies, List<Movie> mUserFaves,
                                         Context mContext, Listeners.OnFaveClick onFaveInterface) {
@@ -56,53 +53,43 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder called");
+
+        final boolean isFave;
 
         holder.btnFave.setOnCheckedChangeListener(null);
-
         if (isFave(mDummyMovies.get(position))) {
             holder.btnFave.setChecked(true);
-
+            holder.setIsFave(true);
         } else {
             holder.btnFave.setChecked(false);
-
+            holder.setIsFave(false);
         }
-        // get the images & load them into image position
+        isFave = holder.getIsFave();
+
         Glide.with(mContext)
                 .asBitmap()
                 .load(mDummyMovies.get(position).getImgUrl())
                 .into(holder.image);
 
-        // get titles & load them in title position
         holder.title.setText(mDummyMovies.get(position).getTitle());
+
         holder.description.setText(mDummyMovies.get(position).getDescription());
 
-        // click on the whole movie item
         holder.movieItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // open movie activity
-                Log.e(TAG, "onMovieClick: is Fave? " + isMovieFave);
-                onFaveInterface.onMovieItemClick(mDummyMovies.get(position).getId(), isMovieFave);
-                Log.d(TAG, "onClick: clicked list item");
-                Toast.makeText(mContext, "Title: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                onFaveInterface.onMovieItemClick(mDummyMovies.get(position).getId(), isFave);
             }
         });
 
-        // click on favourite button
         holder.btnFave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     onFaveInterface.onFave(mDummyMovies.get(position).getId());
-                    notifyItemChanged(position, mDummyMovies.get(position));
-                    //mUserFaves.add(mDummyMovies.get(position));
-                    Toast.makeText(mContext, "checked this: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 } else {
                     onFaveInterface.onUnfave(mDummyMovies.get(position).getId());
-                    notifyItemChanged(position, mDummyMovies.get(position));
-                    //mUserFaves.remove(mDummyMovies.get(position));
-                    Toast.makeText(mContext, "UNchecked this: " + mDummyMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -134,24 +121,31 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         TextView description;
         ToggleButton btnFave;
         View movieItemLayout;
+        boolean isMovieFave;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            // why not this.image, this.title, et?
+
             image = itemView.findViewById(R.id.movie_image);
             title = itemView.findViewById(R.id.movie_title);
             description = itemView.findViewById(R.id.movie_description);
             btnFave = itemView.findViewById(R.id.btn_favorite);
             movieItemLayout = itemView.findViewById(R.id.layout_movie_item);
+        }
 
+        public void setIsFave(boolean isFave) {
+            this.isMovieFave = isFave;
+        }
+
+        public boolean getIsFave(){
+            return this.isMovieFave;
         }
     }
 
-    // change to stream
     private /*static*/ boolean isFave(Movie movie) {
         for (Movie item:mUserFaves){
             if (item.getTitle().equals(movie.getTitle()))
-                //isMovieFave = true;
                 return true;
         }
 
@@ -167,4 +161,5 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         //isMovieFave = false;
         return  false;
     }
+
 }

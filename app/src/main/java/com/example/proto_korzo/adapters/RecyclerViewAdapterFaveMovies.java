@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -48,10 +47,14 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
+        final boolean isFave;
+
         holder.btnFave.setOnCheckedChangeListener(null);
         holder.btnFave.setChecked(true);
 
-        // get the images & load them into image position
+        holder.setIsFave(true);
+        isFave = holder.getIsFave();
+
         Glide.with(mContext)
                 .asBitmap()
                 .load(mFaveMovies.get(position).getImgUrl())
@@ -64,8 +67,7 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
             @Override
             public void onClick(View v) {
                 // open movie activity
-                Toast.makeText(mContext, "Title: " + mFaveMovies.get(position).getTitle(),
-                        Toast.LENGTH_SHORT).show();
+                onFaveListener.onMovieItemClick(mFaveMovies.get(position).getId(), isFave);
             }
         });
 
@@ -74,14 +76,9 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    // all of them are checked here
-                    //Toast.makeText(mContext, "checked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
-                } else {
-                    //Toast.makeText(mContext, "UNchecked this: " + mFaveMovies.get(position).getTitle(), Toast.LENGTH_LONG).show();
-                    onFaveListener.onUnfave(mFaveMovies.get(position).getId()); // remove item
-                    //mFaveMovies.remove(mFaveMovies.get(position));
-                    //notifyItemRemoved(position); // notify it's removed ?
-                    //notifyItemRangeChanged(position, mFaveMovies.size()); // notify index changes ?
+                    // they are all checked anyway
+                    } else {
+                    onFaveListener.onUnfave(mFaveMovies.get(position).getId());
                 }
             }
         });
@@ -105,6 +102,7 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
         TextView description;
         ToggleButton btnFave;
         View movieItemLayout;
+        boolean isMovieFave;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -115,6 +113,15 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
             btnFave = itemView.findViewById(R.id.btn_favorite);
             movieItemLayout = itemView.findViewById(R.id.layout_movie_item);
         }
+
+        public void setIsFave(boolean isFave) {
+            this.isMovieFave = isFave;
+        }
+
+        public boolean getIsFave(){
+            return isMovieFave;
+        }
+
     }
 
 }

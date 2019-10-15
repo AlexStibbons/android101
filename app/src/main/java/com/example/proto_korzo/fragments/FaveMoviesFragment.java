@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
+import com.example.proto_korzo.activities.MovieActivity;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterFaveMovies;
 import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
 import com.example.proto_korzo.database.DBUserMovie;
@@ -111,6 +112,15 @@ public class FaveMoviesFragment extends Fragment {
         @Override
         public void onMovieItemClick(long movieId, boolean isFave) {
 
+            Intent intent = new Intent(getContext(), MovieActivity.class);
+            // pass value with intent
+            // movie object + fave boolean
+            intent.putExtra("MovieIdExtra", movieId);
+            intent.putExtra("IsFaveExtra", isFave);
+            intent.putExtra("userIdExtra", id);
+            // start new activity via intent, obvs
+            startActivity(intent);
+
         }
     };
 
@@ -125,7 +135,12 @@ public class FaveMoviesFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
 
             if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
-                fetchFaves();
+                AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
+                    @Override
+                    public void onMoviesFetched(List<Movie> movies) {
+                        adapter.setFaveMovies(movies);
+                    }
+                });
             }
 
         }
