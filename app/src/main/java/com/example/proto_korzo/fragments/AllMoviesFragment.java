@@ -22,7 +22,6 @@ import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.activities.MovieActivity;
 import com.example.proto_korzo.adapters.RecyclerViewAdapterAllMovies;
 import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
-import com.example.proto_korzo.broadcastReceivers.FaveChangeBroadcast;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 
@@ -42,13 +41,8 @@ public class AllMoviesFragment extends Fragment {
 
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
-    FaveChangeBroadcast faveReceiver;
     IntentFilter intentFilter;
 
-    /*public AllMoviesFragment(long id) {
-        super();
-        this.id = id;
-    }*/
     public AllMoviesFragment() {
     }
 
@@ -116,7 +110,7 @@ public class AllMoviesFragment extends Fragment {
                 getActivity(), faveClickListener);
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
     }
 

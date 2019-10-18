@@ -82,7 +82,7 @@ public class AllMoviesFragment2 extends Fragment {
         Log.e(TAG, "onViewCreated: FAVE LIST SIZE" + userFavesMovies.size());
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
-        initRecyclerView();
+        //initRecyclerView();
 
         return rootView;
     }
@@ -109,6 +109,9 @@ public class AllMoviesFragment2 extends Fragment {
                     public void onMoviesFetched(List<Movie> movies) {
                         userFavesMovies.clear();
                         userFavesMovies.addAll(movies);
+                        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies,
+                                getActivity(), faveClickListener);
+                        initRecyclerView();
                     }
                 });
 
@@ -120,8 +123,8 @@ public class AllMoviesFragment2 extends Fragment {
         Log.d(TAG, "initRecyclerView: started");
 
 
-        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies,
-                this.getActivity(), faveClickListener);
+       /* adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies,
+                this.getActivity(), faveClickListener);*/
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));

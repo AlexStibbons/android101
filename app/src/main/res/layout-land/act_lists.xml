@@ -16,7 +16,10 @@
             app:layout_constraintBottom_toTopOf="@id/view_pager"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/guideline"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"
+            app:tabMaxWidth="0dp"
+            app:tabGravity="fill"
+            app:tabMode="fixed" />
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/view_pager"
