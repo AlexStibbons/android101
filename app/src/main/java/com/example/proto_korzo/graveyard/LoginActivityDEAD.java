@@ -46,7 +46,7 @@ public class LoginActivityDEAD extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_main);
+        setContentView(R.layout.act_login);
 
         // initialize necessary variables : long way
         enter = (Button) findViewById(R.id.btn_enter);

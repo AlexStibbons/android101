@@ -1,6 +1,7 @@
 package com.example.proto_korzo.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,8 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-
+        Log.d(TAG, "onBindViewHolder() " + position);
+        Log.e(TAG, "onBindViewHolder: TITLE: " + mDummyMovies.get(position).getTitle());
         final boolean isFave;
 
         holder.btnFave.setOnCheckedChangeListener(null);

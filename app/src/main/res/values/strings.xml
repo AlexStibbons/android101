@@ -7,6 +7,4 @@
     <string name="login_email">Input email</string>
     <string name="login_password">Input password</string>
     <string name="login">Enter</string>
-    <string name="btn_all_movies">See all</string>
-    <string name="btn_to_watch_list">To watch list</string>
 </resources>

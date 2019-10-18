@@ -16,6 +16,7 @@ public class FaveChangeBroadcast extends BroadcastReceiver {
 
         if (IF_FAVE_CHANGE.equals(intent.getAction())) {
 
+
             Toast.makeText(context, "Change data / refresh fragments", Toast.LENGTH_SHORT).show();
         }
 

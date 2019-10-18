@@ -15,8 +15,10 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
         super(fragmentManager);
 
         fragments = new Fragment[] {
-                new AllMoviesFragment(id),
-                new FaveMoviesFragment(id)
+                //new AllMoviesFragment(id),
+                AllMoviesFragment.getInstance(id),
+                //new FaveMoviesFragment(id)
+                FaveMoviesFragment.getInstance(id)
         };
     }
 
@@ -36,7 +38,7 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
             case 0:
                 return "All Movies";
             case 1:
-                return "To Watch";
+                return "Watchlist";
             default:
                 return "Tab";
         }

@@ -3,7 +3,6 @@ package com.example.proto_korzo.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,13 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.adapters.ViewPageAdapter;
-import com.example.proto_korzo.database.DBUserMovie;
-import com.example.proto_korzo.database.MovieDBAPI;
-import com.example.proto_korzo.database.model.Movie;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // 1. check network connectivity
 // 2. get user data (using the passed on user id) from DB
@@ -28,21 +21,8 @@ import java.util.List;
 
 public class ListsActivity extends AppCompatActivity {
 
-    private static final String TAG = "ListsActivity";
+    private static final String TAG = ListsActivity.class.getSimpleName();
 
-    private DBUserMovie database;
-    private MovieDBAPI api;
-
-    TextView textId; // for testing
-
-    //    **************** RECYCLER VIEW ****************
-    // declare everything that needs to be used
-    // in this case, that would be all the lists used in adapter
-    private List<Movie> dummyMovies = new ArrayList<>();
-    List<Movie> userFaves  = new ArrayList<>();
-    // the list needs to be one list of movies
-    // retrieved from moviedb api
-    // or from userId - favourite movies
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

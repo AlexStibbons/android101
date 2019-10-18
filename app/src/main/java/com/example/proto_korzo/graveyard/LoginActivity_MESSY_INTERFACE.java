@@ -34,7 +34,7 @@ public class LoginActivity_MESSY_INTERFACE extends AppCompatActivity  {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_main);
+        setContentView(R.layout.act_login);
 
         // find the variables in the layout
         emailInput = (EditText) findViewById(R.id.login_email);

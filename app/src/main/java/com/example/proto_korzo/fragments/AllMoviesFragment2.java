@@ -29,9 +29,9 @@ import com.example.proto_korzo.database.model.Movie;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllMoviesFragment extends Fragment {
+public class AllMoviesFragment2 extends Fragment {
 
-    private static final String TAG = AllMoviesFragment.class.getSimpleName();
+    private static final String TAG = AllMoviesFragment2.class.getSimpleName();
 
     private long id; // userId
 
@@ -45,18 +45,22 @@ public class AllMoviesFragment extends Fragment {
     FaveChangeBroadcast faveReceiver;
     IntentFilter intentFilter;
 
-    /*public AllMoviesFragment(long id) {
-        super();
-        this.id = id;
-    }*/
-    public AllMoviesFragment() {
+    public AllMoviesFragment2() {
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setRetainInstance(true);
+        database = DBUserMovie.getInstance(getActivity());
+        Bundle arguments = getArguments();
+        this.id = arguments.getLong("userId");
+
+        // register broadcast receiver
+        intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
+        getContext().registerReceiver(br, intentFilter);
+
+        fetchMovies();
     }
 
     @Nullable
@@ -66,12 +70,6 @@ public class AllMoviesFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        database = DBUserMovie.getInstance(getActivity());
-        id = getArguments().getLong("userId");
-
-        // register broadcast receiver
-        intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
-        getContext().registerReceiver(br, intentFilter);
 
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
@@ -79,20 +77,31 @@ public class AllMoviesFragment extends Fragment {
         TextView testy = rootView.findViewById(R.id.idView);
         testy.setText("User id is: " + id);
 
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
-        fetchMovies();
+        Log.e(TAG, "onViewCreated: ALL LIST SIZE" + dummyMovies.size());
+        Log.e(TAG, "onViewCreated: FAVE LIST SIZE" + userFavesMovies.size());
+
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
+        initRecyclerView();
 
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+
     private void fetchMovies() {
 
+        Log.e(TAG, "fetchMovies: STARTED");
         AsyncTaskManager.fetchAllMovies(database, new AsyncTaskManager.TaskListener() {
             @Override
             public void onMoviesFetched(List<Movie> movies) {
                 dummyMovies.clear();
                 dummyMovies.addAll(movies);
+                Log.e(TAG, "onMoviesFetched: ALL SIZE " + dummyMovies.size());
 
                 // now start another async task
                 AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
@@ -100,7 +109,6 @@ public class AllMoviesFragment extends Fragment {
                     public void onMoviesFetched(List<Movie> movies) {
                         userFavesMovies.clear();
                         userFavesMovies.addAll(movies);
-                        initRecyclerView();
                     }
                 });
 
@@ -113,7 +121,7 @@ public class AllMoviesFragment extends Fragment {
 
 
         adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies,
-                getActivity(), faveClickListener);
+                this.getActivity(), faveClickListener);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -175,18 +183,6 @@ public class AllMoviesFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            // https://developer.android.com/guide/components/broadcasts#kotlin
-            // For this reason, you should not! start long running background threads 
-            // from a broadcast receiver. After onReceive(), the system can kill 
-            // the process at any time to reclaim memory, and in doing so, 
-            // it terminates the spawned thread running in the process. 
-            // To avoid this, you should either call goAsync() (if you want a 
-            // little more time to process the broadcast in a background thread) 
-            // or schedule a JobService from the receiver using the JobScheduler, 
-            // so the system knows that the process continues to perform active work.
-            // SO
-            // move call to AsyncTaskManager to separate method
-            // and use that in onClick listener, before sending broadcast
 
             if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
                 AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
@@ -200,12 +196,12 @@ public class AllMoviesFragment extends Fragment {
         }
     };
 
-    public static AllMoviesFragment getInstance(long id) {
-
+    public static AllMoviesFragment2 getInstance(long id) {
         Bundle args = new Bundle();
         args.putLong("userId", id);
-        AllMoviesFragment allMoviesFragment = new AllMoviesFragment();
-        allMoviesFragment.setArguments(args);
-        return allMoviesFragment;
-    };
+        AllMoviesFragment2 allMoviesFragment2 = new AllMoviesFragment2();
+        allMoviesFragment2.setArguments(args);
+        return allMoviesFragment2;
+    }
+
 }

@@ -39,8 +39,12 @@ public class FaveMoviesFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerViewAdapterFaveMovies adapter;
 
-    public FaveMoviesFragment(long id) {
+    /*public FaveMoviesFragment(long id) {
         this.id = id;
+    }*/
+
+    public FaveMoviesFragment() {
+
     }
 
     @Nullable
@@ -51,15 +55,16 @@ public class FaveMoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         database = DBUserMovie.getInstance(getActivity());
+        id = getArguments().getLong("userId");
 
         // register BR
         IntentFilter intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
         getContext().registerReceiver(br, intentFilter);
 
-        Log.e(TAG, "FAVES FRAGMENT GOTTEN ID: " + id);
         TextView testy = rootView.findViewById(R.id.idView);
         testy.setText("User id is: " + id);
 
+        // here it recognizes recyclerView, but skips layout bc "there's no adapter attached"
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
         fetchFaves();
@@ -102,7 +107,7 @@ public class FaveMoviesFragment extends Fragment {
             AsyncTaskManager.removeFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
                 @Override
                 public void onMoviesFetched(List<Movie> movies) {
-                    adapter.setFaveMovies(movies);
+                    //adapter.setFaveMovies(movies);
                 }
             });
 
@@ -120,6 +125,7 @@ public class FaveMoviesFragment extends Fragment {
             intent.putExtra("userIdExtra", id);
             // start new activity via intent, obvs
             startActivity(intent);
+            // this fragment should stay alive, for going back
 
         }
     };
@@ -134,6 +140,19 @@ public class FaveMoviesFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            // https://developer.android.com/guide/components/broadcasts#kotlin
+            // For this reason, you should not! start long running background threads 
+            // from a broadcast receiver. After onReceive(), the system can kill 
+            // the process at any time to reclaim memory, and in doing so, 
+            // it terminates the spawned thread running in the process. 
+            // To avoid this, you should either call goAsync() (if you want a 
+            // little more time to process the broadcast in a background thread) 
+            // or schedule a JobService from the receiver using the JobScheduler, 
+            // so the system knows that the process continues to perform active work.
+            // SO
+            // move call to AsyncTaskManager to separate method
+            // and use that in onClick listener, before sending broadcast
+
             if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
                 AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
                     @Override
@@ -144,6 +163,16 @@ public class FaveMoviesFragment extends Fragment {
             }
 
         }
+    };
+
+    public static FaveMoviesFragment getInstance(long id) {
+      Bundle args = new Bundle();
+      args.putLong("userId", id);
+
+      FaveMoviesFragment faveMoviesFragment = new FaveMoviesFragment();
+      faveMoviesFragment.setArguments(args);
+
+      return faveMoviesFragment;
     };
 
 }

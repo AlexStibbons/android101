@@ -8,4 +8,8 @@ public class Listeners {
         void onMovieItemClick(long movieId, boolean isFave);
     }
 
+    // add default methods in interface?
+    // https://www.baeldung.com/java-static-default-methods
+    // no, because async tasks need to post execute in the activity/fragment itself
+
 }

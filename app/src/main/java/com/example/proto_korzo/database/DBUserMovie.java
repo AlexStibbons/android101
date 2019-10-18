@@ -39,7 +39,7 @@ public abstract class DBUserMovie extends RoomDatabase {
     private static DBUserMovie buildDatabaseInstance(Context context) {
         return Room.databaseBuilder(context,
                 DBUserMovie.class,
-                DB_NAME).allowMainThreadQueries().build(); // NO in main!!
+                DB_NAME).allowMainThreadQueries().build();
     }
 
     public  void cleanUp(){

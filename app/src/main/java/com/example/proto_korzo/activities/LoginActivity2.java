@@ -22,7 +22,7 @@ import java.util.List;
 
 // Login with interface callback
 // same as Login2, but more understandable
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity2 extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     public static final String EXTRA_ID = "com.example.proto_korzo.LoginActivity.UserId";
@@ -67,10 +67,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (Utils.hasLoginData(email, password)) {
 
-                    database = DBUserMovie.getInstance(LoginActivity.this);
+                    database = DBUserMovie.getInstance(LoginActivity2.this);
                     fetchUser(email, password); // starting point
                 } else {
-                    Toast.makeText(LoginActivity.this, "Email and password, please",
+                    Toast.makeText(LoginActivity2.this, "Email and password, please",
                             Toast.LENGTH_LONG).show();
                 }
 
@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.e(TAG, "CHANGE ACT USER ID " + userId);
 
-        Intent intent = new Intent(LoginActivity.this, ListsActivity.class);
+        Intent intent = new Intent(LoginActivity2.this, ListsActivity.class);
         intent.putExtra(EXTRA_ID, userId);
         startActivity(intent);
         finish();
