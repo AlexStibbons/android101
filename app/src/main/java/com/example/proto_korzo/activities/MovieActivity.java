@@ -110,6 +110,7 @@ public class MovieActivity extends AppCompatActivity {
         private FetchMovie fetchInterface;
         private DBUserMovie database;
         private MovieDBService movieService;
+        Movie foundMovie;
 
         public FetchMovieTask(DBUserMovie database, FetchMovie fetchInterface) {
             this.database = database;
@@ -121,7 +122,6 @@ public class MovieActivity extends AppCompatActivity {
         protected Movie doInBackground(Integer... ints) {
 
             //Movie foundMovie = database.getMovieDao().getMovieById(longs[0]);
-            Movie foundMovie = null;
             try {
                 foundMovie = movieService.getMovie(ints[0], Utils.API_KEY).execute().body();
             } catch (IOException e) {

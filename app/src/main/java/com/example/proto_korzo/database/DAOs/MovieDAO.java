@@ -26,6 +26,9 @@ public interface MovieDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public void addMovie(Movie movie);
 
+    @Query("DELETE FROM movies WHERE movies.id = :movieId")
+    public void deleteMovieById(int movieId);
+
     @Delete
     public void deleteMovie(Movie movie);
 

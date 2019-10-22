@@ -25,7 +25,7 @@ public interface UserMovieDAO {
     public void deleteByMovieId(int id);
 
     @Query("DELETE FROM user_movie WHERE user_movie.movieId = :movieId AND user_movie.userId = :userId")
-    public void deleteByMovieAndUserId(int userId, int movieId);
+    public void deleteByMovieAndUserId(int movieId, int userId);
 
     @Query("SELECT * FROM movies INNER JOIN user_movie ON movies.id = user_movie.movieId WHERE user_movie.userId = :id")
     public List<Movie> getMoviesByUserId(int id);
