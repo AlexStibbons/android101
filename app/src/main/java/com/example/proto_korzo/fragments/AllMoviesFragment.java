@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,9 +26,16 @@ import com.example.proto_korzo.adapters.RecyclerViewAdapterAllMovies;
 import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
+import com.example.proto_korzo.database.model.MovieListResponse;
+import com.example.proto_korzo.retrofit.API;
+import com.example.proto_korzo.retrofit.MovieDBService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AllMoviesFragment extends Fragment {
 
@@ -42,6 +51,11 @@ public class AllMoviesFragment extends Fragment {
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
     IntentFilter intentFilter;
+
+    // for scroll
+    Boolean isScrolling = false;
+    int currentItems, totalItems, scrollOutItems;
+    int currentPage = 1;
 
     public AllMoviesFragment() {
     }
@@ -111,7 +125,54 @@ public class AllMoviesFragment extends Fragment {
                 getActivity(), faveClickListener);
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
+        // ***** NO! Not like this *****
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
+                {
+                    isScrolling = true;
+                }
+            }
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                currentItems = layoutManager.getChildCount();
+                totalItems = layoutManager.getItemCount();
+                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+
+                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    isScrolling = false;
+                    Toast.makeText(getActivity(), "End of list / Fetch new data", Toast.LENGTH_SHORT).show();
+
+                    currentPage++;
+                    MovieDBService movieService = API.getRetrofitInstance().create(MovieDBService.class);
+                    Call<MovieListResponse> call = movieService.getPopularMovies(Utils.POPULARITY_DESC, false, currentPage, Utils.API_KEY);
+                    call.enqueue(new Callback<MovieListResponse>() {
+                        @Override
+                        public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+                            List<Movie> moreMovies = response.body().getResults();
+
+                            adapter.addMovies(moreMovies);
+                        }
+
+                        @Override
+                        public void onFailure(Call<MovieListResponse> call, Throwable t) {
+
+                        }
+                    });
+
+                }
+            }
+
+
+        });
+
 
     }
 

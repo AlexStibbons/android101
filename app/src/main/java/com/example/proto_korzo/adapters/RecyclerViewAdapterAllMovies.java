@@ -110,6 +110,11 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         notifyDataSetChanged();
     }
 
+    public void addMovies(List<Movie> moreMovies) {
+        mDummyMovies.addAll(moreMovies);
+        notifyDataSetChanged();
+    }
+
     public void setFaveMovies(List<Movie> faves) {
         mUserFaves.clear();
         mUserFaves.addAll(faves);
