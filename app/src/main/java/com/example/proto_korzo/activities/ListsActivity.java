@@ -30,7 +30,7 @@ public class ListsActivity extends AppCompatActivity {
         setContentView(R.layout.act_lists);
 
         Intent i = getIntent();
-        Long id = i.getLongExtra(LoginActivity.EXTRA_ID, -1);
+        int id = i.getIntExtra(LoginActivity.EXTRA_ID, -1);
         Log.e(TAG, "ACTIVITY GOTTEN ID: " + id);
 
         // VIEW PAGER & TABLAYOUT FOR TABS + FRAGMENTS

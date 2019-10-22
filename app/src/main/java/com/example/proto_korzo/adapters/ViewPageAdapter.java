@@ -11,13 +11,11 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
 
     private Fragment[] fragments;
 
-    public ViewPageAdapter(FragmentManager fragmentManager, long id){
+    public ViewPageAdapter(FragmentManager fragmentManager, int id){
         super(fragmentManager);
 
         fragments = new Fragment[] {
-                //new AllMoviesFragment(id),
                 AllMoviesFragment.getInstance(id),
-                //new FaveMoviesFragment(id)
                 FaveMoviesFragment.getInstance(id)
         };
     }
@@ -36,7 +34,7 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "All Movies";
+                return "Movies";
             case 1:
                 return "Watchlist";
             default:

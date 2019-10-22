@@ -33,15 +33,12 @@ public class FaveMoviesFragment extends Fragment {
     private static final String TAG = "FaveMoviesFragment";
 
     private DBUserMovie database;
-    private long id;
+    private int id;
     private List<Movie> userFaves = new ArrayList<>();
 
     RecyclerView recyclerView;
     RecyclerViewAdapterFaveMovies adapter;
 
-    /*public FaveMoviesFragment(long id) {
-        this.id = id;
-    }*/
 
     public FaveMoviesFragment() {
 
@@ -55,7 +52,7 @@ public class FaveMoviesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
 
         database = DBUserMovie.getInstance(getActivity());
-        id = getArguments().getLong("userId");
+        id = getArguments().getInt("userId");
 
         // register BR
         IntentFilter intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
@@ -96,15 +93,15 @@ public class FaveMoviesFragment extends Fragment {
 
     Listeners.OnFaveClick listener = new Listeners.OnFaveClick() {
         @Override
-        public void onFave(long movieId) {
+        public void onFave(Movie movie) {
             // this has no functionality here
             // all of them are favourites
             // they can only be unfaved
         }
 
         @Override
-        public void onUnfave(long movieId) {
-            AsyncTaskManager.removeFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
+        public void onUnfave(Movie movie) {
+            AsyncTaskManager.removeFaveMovie(database, id, movie, new AsyncTaskManager.TaskListener() {
                 @Override
                 public void onMoviesFetched(List<Movie> movies) {
                     //adapter.setFaveMovies(movies);
@@ -115,7 +112,7 @@ public class FaveMoviesFragment extends Fragment {
         }
 
         @Override
-        public void onMovieItemClick(long movieId, boolean isFave) {
+        public void onMovieItemClick(int movieId, boolean isFave) {
 
             Intent intent = new Intent(getContext(), MovieActivity.class);
             // pass value with intent
@@ -130,9 +127,10 @@ public class FaveMoviesFragment extends Fragment {
         }
     };
 
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         getContext().unregisterReceiver(br);
     }
 
@@ -165,9 +163,9 @@ public class FaveMoviesFragment extends Fragment {
         }
     };
 
-    public static FaveMoviesFragment getInstance(long id) {
+    public static FaveMoviesFragment getInstance(int id) {
       Bundle args = new Bundle();
-      args.putLong("userId", id);
+      args.putInt("userId", id);
 
       FaveMoviesFragment faveMoviesFragment = new FaveMoviesFragment();
       faveMoviesFragment.setArguments(args);

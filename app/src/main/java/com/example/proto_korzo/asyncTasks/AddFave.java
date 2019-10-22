@@ -8,22 +8,24 @@ import com.example.proto_korzo.database.model.UserMovieJoin;
 
 import java.util.List;
 
-public class AddFave extends AsyncTask<Long, Void, List<Movie>> {
+public class AddFave extends AsyncTask<Integer, Void, List<Movie>> {
 
     private DBUserMovie database;
     private AsyncTaskManager.TaskListener listener;
+    private Movie movie;
 
-    public AddFave(DBUserMovie database, AsyncTaskManager.TaskListener listener){
+    public AddFave(DBUserMovie database, Movie movie, AsyncTaskManager.TaskListener listener){
         this.database = database;
         this.listener = listener;
+        this.movie = movie;
     }
 
     @Override
-    protected List<Movie> doInBackground(Long... longs) {
+    protected List<Movie> doInBackground(Integer... ints) {
         // UserMovieJoin(userId, movieId)
-        database.getUserMovieDao().addUserMovie(new UserMovieJoin(longs[0], longs[1]));
-        List<Movie> newFaves = database.getUserMovieDao().getMoviesByUserId(longs[0]);
-
+        database.getMovieDao().addMovie(movie);
+        database.getUserMovieDao().addUserMovie(new UserMovieJoin(ints[0], movie.getId()));
+        List<Movie> newFaves = database.getUserMovieDao().getMoviesByUserId(ints[0]);
         return newFaves;
     }
 

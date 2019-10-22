@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.proto_korzo.R;
+import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.fragments.Listeners;
 
@@ -57,11 +58,11 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
 
         Glide.with(mContext)
                 .asBitmap()
-                .load(mFaveMovies.get(position).getImgUrl())
+                .load(Utils.BASE_IMG_URL + mFaveMovies.get(position).getPoster_path())
                 .into(holder.image);
 
         holder.title.setText(mFaveMovies.get(position).getTitle());
-        holder.description.setText(mFaveMovies.get(position).getDescription());
+        holder.description.setText(mFaveMovies.get(position).getOverview());
 
         holder.movieItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +79,7 @@ public class RecyclerViewAdapterFaveMovies extends RecyclerView.Adapter<Recycler
                 if (isChecked) {
                     // they are all checked anyway
                     } else {
-                    onFaveListener.onUnfave(mFaveMovies.get(position).getId());
+                    onFaveListener.onUnfave(mFaveMovies.get(position));
                 }
             }
         });

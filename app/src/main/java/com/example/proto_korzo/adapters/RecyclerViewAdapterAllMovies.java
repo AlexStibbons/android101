@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.proto_korzo.R;
+import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.fragments.Listeners;
 
@@ -70,12 +71,12 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
 
         Glide.with(mContext)
                 .asBitmap()
-                .load(mDummyMovies.get(position).getImgUrl())
+                .load(Utils.BASE_IMG_URL + mDummyMovies.get(position).getPoster_path())
                 .into(holder.image);
 
         holder.title.setText(mDummyMovies.get(position).getTitle());
 
-        holder.description.setText(mDummyMovies.get(position).getDescription());
+        holder.description.setText(mDummyMovies.get(position).getOverview());
 
         holder.movieItemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,9 +90,9 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    onFaveInterface.onFave(mDummyMovies.get(position).getId());
+                    onFaveInterface.onFave(mDummyMovies.get(position));
                 } else {
-                    onFaveInterface.onUnfave(mDummyMovies.get(position).getId());
+                    onFaveInterface.onUnfave(mDummyMovies.get(position));
                 }
 
             }

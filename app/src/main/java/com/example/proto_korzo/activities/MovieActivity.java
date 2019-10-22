@@ -19,13 +19,16 @@ import com.example.proto_korzo.asyncTasks.AsyncTaskManager;
 import com.example.proto_korzo.database.DBUserMovie;
 import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.fragments.Listeners;
+import com.example.proto_korzo.retrofit.API;
+import com.example.proto_korzo.retrofit.MovieDBService;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MovieActivity extends AppCompatActivity {
 
-    private long userId;
-    private long movieId;
+    private int userId;
+    private int movieId;
     private boolean isFave;
     private DBUserMovie database;
 
@@ -47,20 +50,21 @@ public class MovieActivity extends AppCompatActivity {
         btnFave = findViewById(R.id.btn_movieAct_favorite);
 
         Intent i = getIntent();
-        movieId = i.getLongExtra("MovieIdExtra", -1);
+        movieId = i.getIntExtra("MovieIdExtra", -1);
         isFave = i.getBooleanExtra("IsFaveExtra", false);
-        userId = i.getLongExtra("userIdExtra", -1);
+        userId = i.getIntExtra("userIdExtra", -1);
 
         Log.e("movie activity", "onCreate: movie id " + movieId);
         Log.e("movie activity", "onCreate: is fave " + isFave);
         Log.e("movie activity", "onCreate: user id " + userId);
 
         fetchMovieById(movieId);
+
     }
 
-    public void fetchMovieById(long movieId){
+    public void fetchMovieById(int movieId){
         FetchMovieTask fetchMovie = new FetchMovieTask(database, fetchMovieInterface);
-        fetchMovie.execute(movieId);
+        fetchMovie.execute((int) movieId);
     }
 
     private interface FetchMovie {
@@ -72,11 +76,11 @@ public class MovieActivity extends AppCompatActivity {
         public void onMovieFetched(final Movie movie) {
 
             movieTitle.setText(movie.getTitle());
-            movieDescription.setText(movie.getDescription());
+            movieDescription.setText(movie.getOverview());
 
             Glide.with(MovieActivity.this)
                     .asBitmap()
-                    .load(movie.getImgUrl())
+                    .load(Utils.BASE_IMG_URL + movie.getPoster_path())
                     .into(movieImage);
 
             btnFave.setOnCheckedChangeListener(null);
@@ -91,9 +95,9 @@ public class MovieActivity extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        onFaveInterface.onFave(movieId);
+                        onFaveInterface.onFave(movie);
                     } else {
-                        onFaveInterface.onUnfave(movieId);
+                        onFaveInterface.onUnfave(movie);
                     }
                 }
             });
@@ -101,20 +105,28 @@ public class MovieActivity extends AppCompatActivity {
         }
     };
 
-    private class FetchMovieTask extends AsyncTask<Long, Void, Movie> {
+    private class FetchMovieTask extends AsyncTask<Integer, Void, Movie> {
 
         private FetchMovie fetchInterface;
         private DBUserMovie database;
+        private MovieDBService movieService;
 
         public FetchMovieTask(DBUserMovie database, FetchMovie fetchInterface) {
             this.database = database;
             this.fetchInterface = fetchInterface;
+            this.movieService = API.getRetrofitInstance().create(MovieDBService.class);
         }
 
         @Override
-        protected Movie doInBackground(Long... longs) {
+        protected Movie doInBackground(Integer... ints) {
 
-            Movie foundMovie = database.getMovieDao().getMovieById(longs[0]);
+            //Movie foundMovie = database.getMovieDao().getMovieById(longs[0]);
+            Movie foundMovie = null;
+            try {
+                foundMovie = movieService.getMovie(ints[0], Utils.API_KEY).execute().body();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             return foundMovie;
         }
@@ -128,8 +140,8 @@ public class MovieActivity extends AppCompatActivity {
 
     Listeners.OnFaveClick onFaveInterface = new Listeners.OnFaveClick() {
         @Override
-        public void onFave(long movieId) {
-            AsyncTaskManager.setFaveMovie(database, userId, movieId, new AsyncTaskManager.TaskListener() {
+        public void onFave(Movie movie) {
+            AsyncTaskManager.setFaveMovie(database, userId, movie, new AsyncTaskManager.TaskListener() {
                 @Override
                 public void onMoviesFetched(List<Movie> movies) {
                     sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
@@ -138,9 +150,9 @@ public class MovieActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onUnfave(long movieId) {
+        public void onUnfave(Movie movie) {
 
-            AsyncTaskManager.removeFaveMovie(database, userId, movieId, new AsyncTaskManager.TaskListener() {
+            AsyncTaskManager.removeFaveMovie(database, userId, movie, new AsyncTaskManager.TaskListener() {
                 @Override
                 public void onMoviesFetched(List<Movie> movies) {
                     sendBroadcast(new Intent(Utils.IF_FAVE_CHANGED));
@@ -150,7 +162,7 @@ public class MovieActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onMovieItemClick(long movieId, boolean isFave) {
+        public void onMovieItemClick(int movieId, boolean isFave) {
             // do nothiiiinggggg
         }
     };

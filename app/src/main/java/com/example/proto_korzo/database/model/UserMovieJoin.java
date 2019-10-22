@@ -16,32 +16,32 @@ import androidx.room.Ignore;
         })
 public class UserMovieJoin {
 
-    private long userId;
+    private int userId;
 
-    private long movieId;
+    private int movieId;
 
     @Ignore
     public UserMovieJoin() {
     }
 
-    public UserMovieJoin(long userId, long movieId) {
+    public UserMovieJoin(int userId, int movieId) {
         this.userId = userId;
         this.movieId = movieId;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public long getMovieId() {
+    public int getMovieId() {
         return movieId;
     }
 
-    public void setMovieId(long movieId) {
+    public void setMovieId(int movieId) {
         this.movieId = movieId;
     }
 }

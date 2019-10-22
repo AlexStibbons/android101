@@ -32,7 +32,7 @@ public class AllMoviesFragment extends Fragment {
 
     private static final String TAG = AllMoviesFragment.class.getSimpleName();
 
-    private long id; // userId
+    private int id; // userId
 
     private List<Movie> dummyMovies = new ArrayList<>();
     List<Movie> userFavesMovies = new ArrayList<>();
@@ -61,7 +61,7 @@ public class AllMoviesFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         database = DBUserMovie.getInstance(getActivity());
-        id = getArguments().getLong("userId");
+        id = getArguments().getInt("userId");
 
         // register broadcast receiver
         intentFilter = new IntentFilter(Utils.IF_FAVE_CHANGED);
@@ -87,6 +87,7 @@ public class AllMoviesFragment extends Fragment {
             public void onMoviesFetched(List<Movie> movies) {
                 dummyMovies.clear();
                 dummyMovies.addAll(movies);
+                Log.e(TAG, "onMoviesFetched: SIZE " + dummyMovies.size() );
 
                 // now start another async task
                 AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
@@ -117,9 +118,9 @@ public class AllMoviesFragment extends Fragment {
 
     Listeners.OnFaveClick faveClickListener = new Listeners.OnFaveClick() {
         @Override
-        public void onFave(long movieId) {
+        public void onFave(Movie movie) {
 
-            AsyncTaskManager.setFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
+            AsyncTaskManager.setFaveMovie(database, id, movie, new AsyncTaskManager.TaskListener() {
                 @Override
                 public void onMoviesFetched(List<Movie> movies) {
 
@@ -131,8 +132,8 @@ public class AllMoviesFragment extends Fragment {
         }
 
         @Override
-        public void onUnfave(long movieId) {
-            AsyncTaskManager.removeFaveMovie(database, id, movieId, new AsyncTaskManager.TaskListener() {
+        public void onUnfave(Movie movie) {
+            AsyncTaskManager.removeFaveMovie(database, id, movie, new AsyncTaskManager.TaskListener() {
                 @Override
                 public void onMoviesFetched(List<Movie> movies) {
                     // userFavesMovies.clear();
@@ -146,7 +147,7 @@ public class AllMoviesFragment extends Fragment {
         }
 
         @Override
-        public void onMovieItemClick(long movieId, boolean isFave) {
+        public void onMovieItemClick(int movieId, boolean isFave) {
 
             Intent intent = new Intent(getContext(), MovieActivity.class);
             intent.putExtra("MovieIdExtra", movieId);
@@ -159,9 +160,8 @@ public class AllMoviesFragment extends Fragment {
     };
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
+    public void onDestroyView() {
+        super.onDestroyView();
         getContext().unregisterReceiver(br);
     }
 
@@ -194,10 +194,10 @@ public class AllMoviesFragment extends Fragment {
         }
     };
 
-    public static AllMoviesFragment getInstance(long id) {
+    public static AllMoviesFragment getInstance(int id) {
 
         Bundle args = new Bundle();
-        args.putLong("userId", id);
+        args.putInt("userId", id);
         AllMoviesFragment allMoviesFragment = new AllMoviesFragment();
         allMoviesFragment.setArguments(args);
         return allMoviesFragment;

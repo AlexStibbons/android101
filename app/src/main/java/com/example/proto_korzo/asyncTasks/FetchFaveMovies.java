@@ -7,7 +7,7 @@ import com.example.proto_korzo.database.model.Movie;
 
 import java.util.List;
 
-public class FetchFaveMovies extends AsyncTask<Long, Void, List<Movie>> {
+public class FetchFaveMovies extends AsyncTask<Integer, Void, List<Movie>> {
 
     private DBUserMovie database;
     private AsyncTaskManager.TaskListener listener;
@@ -18,9 +18,9 @@ public class FetchFaveMovies extends AsyncTask<Long, Void, List<Movie>> {
     }
 
     @Override
-    protected List<Movie> doInBackground(Long... longs) {
+    protected List<Movie> doInBackground(Integer... ints) {
 
-        List<Movie> faveMovies = database.getUserMovieDao().getMoviesByUserId(longs[0]);
+        List<Movie> faveMovies = database.getUserMovieDao().getMoviesByUserId(ints[0]);
 
         return faveMovies;
     }

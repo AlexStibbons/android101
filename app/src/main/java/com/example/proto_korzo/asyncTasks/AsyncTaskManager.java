@@ -8,8 +8,6 @@ import java.util.List;
 
 public class AsyncTaskManager {
 
-    // should it be singleton? [getInstance, then setDatabase]
-    // then declare all tasks, so they could be cancelled?
 
     public static void fetchAllMovies(DBUserMovie database, TaskListener listener) {
         FetchAllMovies fetchAllMoviesTask = new FetchAllMovies(database, listener);
@@ -17,19 +15,19 @@ public class AsyncTaskManager {
     }
 
 
-    public static void fetchFaveMovies(DBUserMovie database, long userId, TaskListener listener) {
+    public static void fetchFaveMovies(DBUserMovie database, int userId, TaskListener listener) {
         FetchFaveMovies fetchFaveMoviesTask = new FetchFaveMovies(database, listener);
         fetchFaveMoviesTask.execute(userId);
     }
 
-    public static void setFaveMovie(DBUserMovie database, long userId, long movieId, TaskListener listener) {
-        AddFave addFaveTask = new AddFave(database, listener);
-        addFaveTask.execute(userId, movieId);
+    public static void setFaveMovie(DBUserMovie database, int userId, Movie movie, TaskListener listener) {
+        AddFave addFaveTask = new AddFave(database, movie, listener);
+        addFaveTask.execute(userId);
     }
 
-    public static void removeFaveMovie(DBUserMovie database, long userId, long movieId, TaskListener listener) {
-        RemoveFave removeFaveTask = new RemoveFave(database, listener);
-        removeFaveTask.execute(userId, movieId);
+    public static void removeFaveMovie(DBUserMovie database, int userId, Movie movie, TaskListener listener) {
+        RemoveFave removeFaveTask = new RemoveFave(database, movie, listener);
+        removeFaveTask.execute(userId);
     }
 
     public interface TaskListener {
@@ -37,7 +35,7 @@ public class AsyncTaskManager {
     }
 
     public interface OnFindUser {
-        void onFinished(long userId);
+        void onFinished(int userId);
     }
 
 }

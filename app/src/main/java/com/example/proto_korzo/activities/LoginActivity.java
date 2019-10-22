@@ -15,10 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
-import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.database.model.User;
-
-import java.util.List;
 
 // Login with interface callback
 // same as Login2, but more understandable
@@ -33,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // *** interface ***
     public interface FindUser {
-        void userFound(long id);
+        void userFound(int id);
 
         void userNotFound();
     }
@@ -43,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText etPassword;
     Button enter;
 
-    long userId;
+    int userId;
     private DBUserMovie database;
 
     @Override
@@ -52,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.act_login);
 
-      //  SqlScoutServer.create(this, getPackageName());
+        //  SqlScoutServer.create(this, getPackageName());
 
         etEmail = findViewById(R.id.login_email);
         etPassword = findViewById(R.id.login_password);
@@ -81,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
 
     FindUser usInterface = new FindUser() {
         @Override
-        public void userFound(long id) {
+        public void userFound(int id) {
             Log.e(TAG, "INTERFACE USER ID IS " + id);
             changeActivity(id);
         }
@@ -100,72 +97,42 @@ public class LoginActivity extends AppCompatActivity {
         getUser.execute(email, password);
     }
 
-    public void changeActivity(long userId) {
+    public void changeActivity(int userId) {
 
         Log.e(TAG, "CHANGE ACT USER ID " + userId);
 
         Intent intent = new Intent(LoginActivity.this, ListsActivity.class);
         intent.putExtra(EXTRA_ID, userId);
         startActivity(intent);
-        finish();
+        //finish();
     }
 
-    private static class GetUserTask extends AsyncTask<String, Void, Long> {
+    private static class GetUserTask extends AsyncTask<String, Void, Integer> {
 
         private FindUser userInterface;
-        private long userId;
+        private int userId;
         private DBUserMovie database;
 
-        public GetUserTask(long userId, DBUserMovie database, FindUser userInterface) {
+        public GetUserTask(int userId, DBUserMovie database, FindUser userInterface) {
             this.userId = userId;
             this.database = database;
             this.userInterface = userInterface;
         }
 
         @Override
-        protected Long doInBackground(String... strings) {
+        protected Integer doInBackground(String... strings) {
 
-            // init dummy movies here
+            Long id = database.getUserDao().getUserIdByEmail(strings[0]);
 
-            // if movie list is zero or isEmpty
-            List<Movie> dbMovies = database.getMovieDao().getAllMovies();
-            if (dbMovies.size() < 1) {
-                // create movies
-                // add to database
-                String img1 = "https://i2.wp.com/www.tor.com/wp-content/uploads/2019/09/vetting-final.jpg?fit=740%2C1067&type=vertical&quality=100&ssl=1";
-                String img2 = "https://i0.wp.com/www.tor.com/wp-content/uploads/2019/07/forhecancreep_full.jpg?fit=740%2C777&type=vertical&quality=100&ssl=1";
-                String img3 = "https://i1.wp.com/www.tor.com/wp-content/uploads/2019/09/Hundrethhouse_-full.jpeg?fit=740%2C958&type=vertical&quality=100&ssl=1";
-                String img4 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/07/regret-return_600px.png";
-                String img5 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png";
-
-                Movie[] input = {
-                        new Movie(1, "Title 1 ", "desc 1", img1),
-                        new Movie(256, "Title 2", "desc 2", img2),
-                        new Movie(2, "Title 3", "desc 3", img3),
-                        new Movie(5689, "Title 4", "desc 4", img4),
-                        new Movie(98, "Title 5", "desc 5", img5),
-                        new Movie(123, "Title 6", "desc 6", img1),
-                        new Movie(555, "Title 7", "desc 7", img2),
-                        new Movie(95674, "Title 8", "desc 8", img3),
-                        new Movie(15, "Title 9", "desc 9", img4),
-                        new Movie(97, "Title 10", "desc 10", img5),
-                        new Movie(675, "Title 11", "desc 11", img1),
-                        new Movie(624, "Title 12", "desc 12", img2),
-                        new Movie(999, "Title 13", "desc 13", img3),
-                        new Movie(956, "Title 14", "desc 14", img4),
-                        new Movie(12567, "Title 15", "desc 15", img5)};
-
-                database.getMovieDao().addMovieList(input);
-            }
-
-            userId = database.getUserDao().getUserIdByEmail(strings[0]);
+            userId = id.intValue();
 
             return userId;
         }
 
         @Override
-        protected void onPostExecute(Long userId) {
-            super.onPostExecute(userId);
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
             Log.e(TAG, "FOUND USER ID IS " + userId);
 
             if (this.userInterface != null) {
@@ -178,13 +145,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private static class CreateUserTask extends AsyncTask<String, Void, Long> {
+    private static class CreateUserTask extends AsyncTask<String, Void, Integer> {
 
-        private long userId;
+        private int userId;
         private DBUserMovie database;
         private FindUser usInterface;
 
-        public CreateUserTask(long userId, DBUserMovie database, FindUser usInterface) {
+        public CreateUserTask(int userId, DBUserMovie database, FindUser usInterface) {
             this.userId = userId;
             this.database = database;
             this.usInterface = usInterface;
@@ -192,15 +159,17 @@ public class LoginActivity extends AppCompatActivity {
 
 
         @Override
-        protected Long doInBackground(String... strings) {
+        protected Integer doInBackground(String... strings) {
 
-            userId = database.getUserDao().addUser(new User(strings[0], strings[1]));
+            Long id = database.getUserDao().addUser(new User(strings[0], strings[1]));
+
+            userId = id.intValue();
 
             return userId;
         }
 
         @Override
-        protected void onPostExecute(Long userId) {
+        protected void onPostExecute(Integer userId) {
             super.onPostExecute(userId);
             Log.e(TAG, "CREATED USER ID IS " + userId);
             if (this.usInterface != null) {
@@ -209,3 +178,4 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
+

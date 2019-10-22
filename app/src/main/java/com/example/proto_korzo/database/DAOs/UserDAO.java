@@ -20,7 +20,7 @@ public interface UserDAO {
     public long getUserIdByEmail(String email);
 
     @Query("SELECT * FROM users WHERE id = :id")
-    public User getUserById(long id);
+    public User getUserById(int id);
 
     @Insert
     public long addUser(User user);

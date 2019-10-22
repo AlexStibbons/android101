@@ -12,13 +12,15 @@ import java.util.ArrayList;
 public class Movie {
 
     @PrimaryKey
-    private long id;
+    private int id;
+
+    private String imdb_id;
 
     private String title;
 
-    private String description;
+    private String overview;
 
-    private String imgUrl;
+    private String poster_path;
 
     // somehow n:n
     @Ignore
@@ -29,27 +31,28 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(long id, String title, String description, String imgUrl) {
+    public Movie(int id, String imdb_id, String title, String overview, String poster_path) {
         this.id = id;
+        this.imdb_id = imdb_id;
         this.title = title;
-        this.description = description;
-        this.imgUrl = imgUrl;
+        this.overview = overview;
+        this.poster_path = poster_path;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getImdb_id() {
+        return imdb_id;
+    }
+
+    public void setImdb_id(String imdb_id) {
+        this.imdb_id = imdb_id;
     }
 
     public String getTitle() {
@@ -60,12 +63,20 @@ public class Movie {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getOverview() {
+        return overview;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public String getPoster_path() {
+        return poster_path;
+    }
+
+    public void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
     }
 
     public List<User> getUsers() {

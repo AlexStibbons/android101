@@ -15,10 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proto_korzo.R;
 import com.example.proto_korzo.Utils;
 import com.example.proto_korzo.database.DBUserMovie;
-import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.database.model.User;
-
-import java.util.List;
 
 // Login with interface callback
 // same as Login2, but more understandable
@@ -127,7 +124,7 @@ public class LoginActivity2 extends AppCompatActivity {
 
             // init dummy movies here
 
-            // if movie list is zero or isEmpty
+           /* // if movie list is zero or isEmpty
             List<Movie> dbMovies = database.getMovieDao().getAllMovies();
             if (dbMovies.size() < 1) {
                 // create movies
@@ -139,24 +136,24 @@ public class LoginActivity2 extends AppCompatActivity {
                 String img5 = "http://strangehorizons.com/wordpress/wp-content/uploads/2019/08/FullSomedayWeWill-402x500.png";
 
                 Movie[] input = {
-                        new Movie(1, "Title 1 ", "desc 1", img1),
-                        new Movie(256, "Title 2", "desc 2", img2),
-                        new Movie(2, "Title 3", "desc 3", img3),
-                        new Movie(5689, "Title 4", "desc 4", img4),
-                        new Movie(98, "Title 5", "desc 5", img5),
-                        new Movie(123, "Title 6", "desc 6", img1),
-                        new Movie(555, "Title 7", "desc 7", img2),
-                        new Movie(95674, "Title 8", "desc 8", img3),
-                        new Movie(15, "Title 9", "desc 9", img4),
-                        new Movie(97, "Title 10", "desc 10", img5),
-                        new Movie(675, "Title 11", "desc 11", img1),
-                        new Movie(624, "Title 12", "desc 12", img2),
-                        new Movie(999, "Title 13", "desc 13", img3),
-                        new Movie(956, "Title 14", "desc 14", img4),
-                        new Movie(12567, "Title 15", "desc 15", img5)};
+                        new Movie(1, "nil", "Title 1 ", "desc 1", img1),
+                        new Movie(256, "nil","Title 2", "desc 2", img2),
+                        new Movie(2, "nil","Title 3", "desc 3", img3),
+                        new Movie(5689,"nil", "Title 4", "desc 4", img4),
+                        new Movie(98,"nil", "Title 5", "desc 5", img5),
+                        new Movie(123, "nil","Title 6", "desc 6", img1),
+                        new Movie(555, "nil","Title 7", "desc 7", img2),
+                        new Movie(95674,"nil", "Title 8", "desc 8", img3),
+                        new Movie(15,"nil", "Title 9", "desc 9", img4),
+                        new Movie(97,"nil", "Title 10", "desc 10", img5),
+                        new Movie(675,"nil", "Title 11", "desc 11", img1),
+                        new Movie(624, "nil","Title 12", "desc 12", img2),
+                        new Movie(999, "nil","Title 13", "desc 13", img3),
+                        new Movie(956, "nil","Title 14", "desc 14", img4),
+                        new Movie(12567, "nil","Title 15", "desc 15", img5)};
 
                 database.getMovieDao().addMovieList(input);
-            }
+            }*/
 
             userId = database.getUserDao().getUserIdByEmail(strings[0]);
 
@@ -208,4 +205,5 @@ public class LoginActivity2 extends AppCompatActivity {
             }
         }
     }
+
 }

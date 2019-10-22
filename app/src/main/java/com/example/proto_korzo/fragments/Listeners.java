@@ -1,11 +1,13 @@
 package com.example.proto_korzo.fragments;
 
+import com.example.proto_korzo.database.model.Movie;
+
 public class Listeners {
 
     public interface OnFaveClick {
-        void onFave(long movieId);
-        void onUnfave(long movieId);
-        void onMovieItemClick(long movieId, boolean isFave);
+        void onFave(Movie movie);
+        void onUnfave(Movie movie);
+        void onMovieItemClick(int movieId, boolean isFave);
     }
 
     // add default methods in interface?

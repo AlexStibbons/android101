@@ -1,6 +1,6 @@
 <resources>
     <string name="dummy_text">Text text text</string>
-    <string name="app_name">Proto-Korzo</string>
+    <string name="app_name">PocketWatchlist</string>
     <string name="main_instruction">Star your favourites!</string>
     <string name="starred_true">Starred!</string>
     <string name="starred_false">Sad</string>

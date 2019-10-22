@@ -7,22 +7,25 @@ import com.example.proto_korzo.database.model.Movie;
 
 import java.util.List;
 
-public class RemoveFave extends AsyncTask<Long, Void, List<Movie>> {
+public class RemoveFave extends AsyncTask<Integer, Void, List<Movie>> {
 
     private DBUserMovie database;
     private AsyncTaskManager.TaskListener listener;
+    private Movie movie;
 
-    public RemoveFave(DBUserMovie database, AsyncTaskManager.TaskListener listener) {
+    public RemoveFave(DBUserMovie database, Movie movie, AsyncTaskManager.TaskListener listener) {
         this.database = database;
         this.listener = listener;
+        this.movie = movie;
     }
 
     @Override
-    protected List<Movie> doInBackground(Long... longs) {
+    protected List<Movie> doInBackground(Integer... ints) {
         // delete(userId, movieID)
-        database.getUserMovieDao().deleteByMovieAndUserId(longs[0], longs[1]);
+        database.getUserMovieDao().deleteByMovieAndUserId(ints[0], movie.getId());
+        database.getMovieDao().deleteMovie(movie);
 
-        List<Movie> newFaves = database.getUserMovieDao().getMoviesByUserId(longs[0]);
+        List<Movie> newFaves = database.getUserMovieDao().getMoviesByUserId(ints[0]);
 
         return newFaves;
     }
