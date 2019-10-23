@@ -8,6 +8,15 @@ import java.util.List;
 
 public class AsyncTaskManager {
 
+    public static void findUser(DBUserMovie database, String email, OnFindUser listener) {
+        FindUser findUserTask = new FindUser(database, listener);
+        findUserTask.execute(email);
+    }
+
+    public static void createUser(DBUserMovie database, String email, String password, OnFindUser listener) {
+        CreateUser createUserTask = new CreateUser(database, listener);
+        createUserTask.execute(email, password);
+    }
 
     public static void fetchAllMovies(DBUserMovie database, TaskListener listener) {
         FetchAllMovies fetchAllMoviesTask = new FetchAllMovies(database, listener);
@@ -35,7 +44,8 @@ public class AsyncTaskManager {
     }
 
     public interface OnFindUser {
-        void onFinished(int userId);
+        void onUserFound(int userId);
+        void onUserNotFound();
     }
 
 }

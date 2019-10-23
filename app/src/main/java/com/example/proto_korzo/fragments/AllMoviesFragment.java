@@ -43,10 +43,11 @@ public class AllMoviesFragment extends Fragment {
 
     private int id; // userId
 
-    private List<Movie> dummyMovies = new ArrayList<>();
+    private List<Movie> allMovies = new ArrayList<>();
     List<Movie> userFavesMovies = new ArrayList<>();
     List<Long> userFavesIds = new ArrayList<>();
     private DBUserMovie database;
+    MovieDBService movieService;
 
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
@@ -63,7 +64,7 @@ public class AllMoviesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        allMovies.clear();
         setRetainInstance(true);
     }
 
@@ -75,6 +76,7 @@ public class AllMoviesFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         database = DBUserMovie.getInstance(getActivity());
+        movieService = API.getRetrofitInstance().create(MovieDBService.class);
         id = getArguments().getInt("userId");
 
         // register broadcast receiver
@@ -89,55 +91,46 @@ public class AllMoviesFragment extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
-        fetchMovies();
+        fetchMovies(movieService);
 
         return rootView;
     }
 
-    private void fetchMovies() {
+    private void fetchMovies(MovieDBService movieService) {
 
-        AsyncTaskManager.fetchAllMovies(database, new AsyncTaskManager.TaskListener() {
+        getMovies(currentPage, movieService); // page 1
+
+        AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
             @Override
             public void onMoviesFetched(List<Movie> movies) {
-                dummyMovies.clear();
-                dummyMovies.addAll(movies);
-                Log.e(TAG, "onMoviesFetched: SIZE " + dummyMovies.size() );
-
-                // now start another async task
-                AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
-                    @Override
-                    public void onMoviesFetched(List<Movie> movies) {
-                        userFavesMovies.clear();
-                        userFavesMovies.addAll(movies);
-                        initRecyclerView();
-                    }
-                });
-
+                userFavesMovies.clear();
+                userFavesMovies.addAll(movies);
+                initRecyclerView();
             }
         });
+
     }
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: started");
 
-
-        adapter = new RecyclerViewAdapterAllMovies(dummyMovies, userFavesMovies,
+        adapter = new RecyclerViewAdapterAllMovies(allMovies, userFavesMovies,
                 getActivity(), faveClickListener);
 
         recyclerView.setAdapter(adapter);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        // ***** NO! Not like this *****
+        // ***** very untidy *****
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                {
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                     isScrolling = true;
                 }
             }
+
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -148,32 +141,13 @@ public class AllMoviesFragment extends Fragment {
 
                 if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
                     isScrolling = false;
-                    Toast.makeText(getActivity(), "End of list / Fetch new data", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(getActivity(), "End of list / Fetch new data",
+                            Toast.LENGTH_SHORT).show();
                     currentPage++;
-                    MovieDBService movieService = API.getRetrofitInstance().create(MovieDBService.class);
-                    Call<MovieListResponse> call = movieService.getPopularMovies(Utils.POPULARITY_DESC, false, currentPage, Utils.API_KEY);
-                    call.enqueue(new Callback<MovieListResponse>() {
-                        @Override
-                        public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
-                            List<Movie> moreMovies = response.body().getResults();
-
-                            adapter.addMovies(moreMovies);
-                        }
-
-                        @Override
-                        public void onFailure(Call<MovieListResponse> call, Throwable t) {
-
-                        }
-                    });
-
+                    getMovies(currentPage, movieService);
                 }
             }
-
-
-        });
-
-
+        }); // end of scroll listener
     }
 
 
@@ -247,13 +221,32 @@ public class AllMoviesFragment extends Fragment {
                 AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
                     @Override
                     public void onMoviesFetched(List<Movie> movies) {
-                       adapter.setFaveMovies(movies);
+                        adapter.setFaveMovies(movies);
                     }
                 });
             }
 
         }
     };
+
+    public void getMovies(int currentPage, MovieDBService movieSevice) {
+
+        Call<MovieListResponse> call = movieService.getPopularMovies(Utils.POPULARITY_DESC, false, currentPage, Utils.API_KEY);
+
+        call.enqueue(new Callback<MovieListResponse>() {
+            @Override
+            public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+
+                List<Movie> moreMovies = response.body().getResults();
+                adapter.addMovies(moreMovies);
+            }
+
+            @Override
+            public void onFailure(Call<MovieListResponse> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error when fetching movies", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     public static AllMoviesFragment getInstance(int id) {
 
@@ -262,5 +255,7 @@ public class AllMoviesFragment extends Fragment {
         AllMoviesFragment allMoviesFragment = new AllMoviesFragment();
         allMoviesFragment.setArguments(args);
         return allMoviesFragment;
-    };
+    }
+
+    ;
 }

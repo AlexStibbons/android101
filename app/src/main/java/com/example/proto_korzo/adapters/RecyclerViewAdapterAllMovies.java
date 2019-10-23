@@ -25,7 +25,6 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
 
     private static final String TAG = "Adapter - all movies";
 
-    // declare variables
     private List<Movie> mDummyMovies;
     private List<Movie> mUserFaves;
     private Context mContext;
@@ -56,7 +55,6 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder() " + position);
-        Log.e(TAG, "onBindViewHolder: TITLE: " + mDummyMovies.get(position).getTitle());
         final boolean isFave;
 
         holder.btnFave.setOnCheckedChangeListener(null);
@@ -151,22 +149,18 @@ public class RecyclerViewAdapterAllMovies extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    private /*static*/ boolean isFave(Movie movie) {
+    private boolean isFave(Movie movie) {
         for (Movie item:mUserFaves){
             if (item.getTitle().equals(movie.getTitle()))
                 return true;
         }
-
         // stream is better
-
        /* Optional<Movie> fave = mUserFaves.stream()
         						.filter(m -> m.id == movie.id)
         						.findFirst();
         if (fave.isPresent()){
         	return true;
         }*/
-        						
-        //isMovieFave = false;
         return  false;
     }
 
