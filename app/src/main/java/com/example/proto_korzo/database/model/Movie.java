@@ -5,6 +5,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -14,7 +16,8 @@ public class Movie {
     @PrimaryKey
     private int id;
 
-    private String imdb_id;
+    @SerializedName("imdb_id")
+    private String imdb_id; //imdb_id
 
     private String title;
 

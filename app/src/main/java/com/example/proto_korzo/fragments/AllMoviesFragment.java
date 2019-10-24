@@ -91,6 +91,7 @@ public class AllMoviesFragment extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
+
         fetchMovies(movieService);
 
         return rootView;
@@ -128,6 +129,11 @@ public class AllMoviesFragment extends Fragment {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                     isScrolling = true;
+                    // fab.hide();
+                }
+
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    // fab.show();
                 }
             }
 
@@ -141,8 +147,8 @@ public class AllMoviesFragment extends Fragment {
 
                 if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
                     isScrolling = false;
-                    Toast.makeText(getActivity(), "End of list / Fetch new data",
-                            Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getActivity(), "End of list / Fetch new data",
+                            //Toast.LENGTH_SHORT).show();
                     currentPage++;
                     getMovies(currentPage, movieService);
                 }
@@ -205,13 +211,13 @@ public class AllMoviesFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
 
             // https://developer.android.com/guide/components/broadcasts#kotlin
-            // For this reason, you should not! start long running background threads 
-            // from a broadcast receiver. After onReceive(), the system can kill 
-            // the process at any time to reclaim memory, and in doing so, 
-            // it terminates the spawned thread running in the process. 
-            // To avoid this, you should either call goAsync() (if you want a 
-            // little more time to process the broadcast in a background thread) 
-            // or schedule a JobService from the receiver using the JobScheduler, 
+            // For this reason, you should not! start long running background threads
+            // from a broadcast receiver. After onReceive(), the system can kill
+            // the process at any time to reclaim memory, and in doing so,
+            // it terminates the spawned thread running in the process.
+            // To avoid this, you should either call goAsync() (if you want a
+            // little more time to process the broadcast in a background thread)
+            // or schedule a JobService from the receiver using the JobScheduler,
             // so the system knows that the process continues to perform active work.
             // SO
             // move call to AsyncTaskManager to separate method
@@ -229,7 +235,7 @@ public class AllMoviesFragment extends Fragment {
         }
     };
 
-    public void getMovies(int currentPage, MovieDBService movieSevice) {
+    private void getMovies(int currentPage, MovieDBService movieService) {
 
         Call<MovieListResponse> call = movieService.getPopularMovies(Utils.POPULARITY_DESC, false, currentPage, Utils.API_KEY);
 
@@ -257,5 +263,4 @@ public class AllMoviesFragment extends Fragment {
         return allMoviesFragment;
     }
 
-    ;
 }

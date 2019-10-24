@@ -50,6 +50,11 @@ public class RfTest extends AppCompatActivity {
 
                 List<Movie> movies = response.body().getResults();
 
+                Log.e(TAG, "onResponse: " + response.raw());
+                Log.e(TAG, "onResponse: " + response.code());
+                Log.e(TAG, "onResponse: " + response.isSuccessful());
+
+                String movieId = response.body().getResults().get(0).getImdb_id();
                /* movies.stream()
                         .forEach(m ->
                                 viewMovies.append("Title: " + m.getTitle() +
@@ -60,6 +65,7 @@ public class RfTest extends AppCompatActivity {
 
                         );*/
 
+                Log.e(TAG, "onResponse: JOCKER IMDB ID " + movieId);
                 for (Movie movie : movies) {
                     String content = "Title: " + movie.getTitle() +
                             "\nDescription: " + movie.getOverview() +

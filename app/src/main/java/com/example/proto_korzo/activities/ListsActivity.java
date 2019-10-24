@@ -31,7 +31,7 @@ public class ListsActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         int id = i.getIntExtra(LoginActivity.EXTRA_ID, -1);
-        Log.e(TAG, "ACTIVITY GOTTEN ID: " + id);
+        Log.e(TAG, "ACTIVITY GOT ID: " + id);
 
         // VIEW PAGER & TABLAYOUT FOR TABS + FRAGMENTS
         ViewPager viewPager = findViewById(R.id.view_pager);

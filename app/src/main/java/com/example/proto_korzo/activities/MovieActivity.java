@@ -28,12 +28,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// implement onFave interface - no reason to make instance of interface here at all
 public class MovieActivity extends AppCompatActivity {
 
     private int userId;
     private int movieId;
     private boolean isFave;
     private DBUserMovie database;
+    private MovieDBService movieService;
 
     TextView movieTitle;
     TextView movieDescription;
@@ -43,14 +45,15 @@ public class MovieActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_movie);
+        //setContentView(R.layout.act_movie);
 
         database = DBUserMovie.getInstance(this);
+        movieService = API.getRetrofitInstance().create(MovieDBService.class);
 
-        movieTitle = findViewById(R.id.et_movieAct_title);
+/*      movieTitle = findViewById(R.id.et_movieAct_title);
         movieDescription = findViewById(R.id.et_movieAct_description);
         movieImage = findViewById(R.id.img_movieAct_image);
-        btnFave = findViewById(R.id.btn_movieAct_favorite);
+        btnFave = findViewById(R.id.btn_movieAct_favorite);*/
 
         Intent i = getIntent();
         movieId = i.getIntExtra("MovieIdExtra", -1);
@@ -61,20 +64,20 @@ public class MovieActivity extends AppCompatActivity {
         Log.e("movie activity", "onCreate: is fave " + isFave);
         Log.e("movie activity", "onCreate: user id " + userId);
 
-        fetchMovieById(movieId);
+        fetchMovieById(movieId, movieService);
 
     }
 
-    public void fetchMovieById(int movieId) {
 
-        MovieDBService movieService = API.getRetrofitInstance().create(MovieDBService.class);
+    public void fetchMovieById(int movieId, MovieDBService movieService) {
+
         Call<Movie> movieCall = movieService.getMovie(movieId, Utils.API_KEY);
 
         movieCall.enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
-                Movie fetchedMovie = response.body();
-                onMovieFetched(fetchedMovie);
+               Movie fetchedMovie = response.body();
+               onMovieFetched(fetchedMovie);
             }
 
             @Override
@@ -114,6 +117,14 @@ public class MovieActivity extends AppCompatActivity {
     };
 
     private void onMovieFetched(final Movie movie) {
+        // on start? no because it doesn't wait for the call to finish
+        // then where?
+        setContentView(R.layout.act_movie);
+        movieTitle = findViewById(R.id.et_movieAct_title);
+        movieDescription = findViewById(R.id.et_movieAct_description);
+        movieImage = findViewById(R.id.img_movieAct_image);
+        btnFave = findViewById(R.id.btn_movieAct_favorite);
+
         movieTitle.setText(movie.getTitle());
         movieDescription.setText(movie.getOverview());
 
