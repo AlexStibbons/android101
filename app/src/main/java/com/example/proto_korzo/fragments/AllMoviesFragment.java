@@ -29,6 +29,7 @@ import com.example.proto_korzo.database.model.Movie;
 import com.example.proto_korzo.database.model.MovieListResponse;
 import com.example.proto_korzo.retrofit.API;
 import com.example.proto_korzo.retrofit.MovieDBService;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class AllMoviesFragment extends Fragment {
     List<Long> userFavesIds = new ArrayList<>();
     private DBUserMovie database;
     MovieDBService movieService;
+    FloatingActionButton fab;
 
     RecyclerView recyclerView;
     private RecyclerViewAdapterAllMovies adapter;
@@ -84,6 +86,7 @@ public class AllMoviesFragment extends Fragment {
         getContext().registerReceiver(br, intentFilter);
 
         View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
+        fab = rootView.findViewById(R.id.fab);
 
         Log.e(TAG, "MOVIES FRAGMENT GOTTEN ID: " + id);
         TextView testy = rootView.findViewById(R.id.idView);
@@ -91,6 +94,12 @@ public class AllMoviesFragment extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.movie_list_recycler_view);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(0);
+            }
+        });
 
         fetchMovies(movieService);
 
@@ -122,38 +131,8 @@ public class AllMoviesFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        // ***** very untidy *****
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    isScrolling = true;
-                    // fab.hide();
-                }
+        addOnScrollListener(recyclerView, layoutManager);
 
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    // fab.show();
-                }
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                currentItems = layoutManager.getChildCount();
-                totalItems = layoutManager.getItemCount();
-                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
-
-                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
-                    isScrolling = false;
-                   // Toast.makeText(getActivity(), "End of list / Fetch new data",
-                            //Toast.LENGTH_SHORT).show();
-                    currentPage++;
-                    getMovies(currentPage, movieService);
-                }
-            }
-        }); // end of scroll listener
     }
 
 
@@ -210,26 +189,8 @@ public class AllMoviesFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            // https://developer.android.com/guide/components/broadcasts#kotlin
-            // For this reason, you should not! start long running background threads
-            // from a broadcast receiver. After onReceive(), the system can kill
-            // the process at any time to reclaim memory, and in doing so,
-            // it terminates the spawned thread running in the process.
-            // To avoid this, you should either call goAsync() (if you want a
-            // little more time to process the broadcast in a background thread)
-            // or schedule a JobService from the receiver using the JobScheduler,
-            // so the system knows that the process continues to perform active work.
-            // SO
-            // move call to AsyncTaskManager to separate method
-            // and use that in onClick listener, before sending broadcast
-
             if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
-                AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
-                    @Override
-                    public void onMoviesFetched(List<Movie> movies) {
-                        adapter.setFaveMovies(movies);
-                    }
-                });
+                broadcastAction();
             }
 
         }
@@ -250,6 +211,48 @@ public class AllMoviesFragment extends Fragment {
             @Override
             public void onFailure(Call<MovieListResponse> call, Throwable t) {
                 Toast.makeText(getActivity(), "Error when fetching movies", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void addOnScrollListener(RecyclerView recyclerView, final LinearLayoutManager layoutManager) {
+        // ***** very untidy *****
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true;
+                    fab.hide();
+                }
+
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    fab.show();
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                currentItems = layoutManager.getChildCount();
+                totalItems = layoutManager.getItemCount();
+                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+
+                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    isScrolling = false;
+                    currentPage++;
+                    getMovies(currentPage, movieService);
+                }
+            }
+        });
+    }
+
+    private void broadcastAction() {
+        AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
+            @Override
+            public void onMoviesFetched(List<Movie> movies) {
+                adapter.setFaveMovies(movies);
             }
         });
     }

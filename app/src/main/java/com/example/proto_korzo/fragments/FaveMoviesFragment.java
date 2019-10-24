@@ -39,9 +39,18 @@ public class FaveMoviesFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerViewAdapterFaveMovies adapter;
 
-
     public FaveMoviesFragment() {
 
+    }
+
+    public static FaveMoviesFragment getInstance(int id) {
+        Bundle args = new Bundle();
+        args.putInt("userId", id);
+
+        FaveMoviesFragment faveMoviesFragment = new FaveMoviesFragment();
+        faveMoviesFragment.setArguments(args);
+
+        return faveMoviesFragment;
     }
 
     @Nullable
@@ -115,15 +124,12 @@ public class FaveMoviesFragment extends Fragment {
         public void onMovieItemClick(int movieId, boolean isFave) {
 
             Intent intent = new Intent(getContext(), MovieActivity.class);
-            // pass value with intent
-            // movie object + fave boolean
+
             intent.putExtra("MovieIdExtra", movieId);
             intent.putExtra("IsFaveExtra", isFave);
             intent.putExtra("userIdExtra", id);
-            // start new activity via intent, obvs
-            startActivity(intent);
-            // this fragment should stay alive, for going back
 
+            startActivity(intent);
         }
     };
 
@@ -138,39 +144,21 @@ public class FaveMoviesFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            // https://developer.android.com/guide/components/broadcasts#kotlin
-            // For this reason, you should not! start long running background threads 
-            // from a broadcast receiver. After onReceive(), the system can kill 
-            // the process at any time to reclaim memory, and in doing so, 
-            // it terminates the spawned thread running in the process. 
-            // To avoid this, you should either call goAsync() (if you want a 
-            // little more time to process the broadcast in a background thread) 
-            // or schedule a JobService from the receiver using the JobScheduler, 
-            // so the system knows that the process continues to perform active work.
-            // SO
-            // move call to AsyncTaskManager to separate method
-            // and use that in onClick listener, before sending broadcast
-
             if (Utils.IF_FAVE_CHANGED.equals(intent.getAction())) {
-                AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
-                    @Override
-                    public void onMoviesFetched(List<Movie> movies) {
-                        adapter.setFaveMovies(movies);
-                    }
-                });
+                broadcastAction();
             }
 
         }
     };
 
-    public static FaveMoviesFragment getInstance(int id) {
-      Bundle args = new Bundle();
-      args.putInt("userId", id);
+    private void broadcastAction() {
+        AsyncTaskManager.fetchFaveMovies(database, id, new AsyncTaskManager.TaskListener() {
+            @Override
+            public void onMoviesFetched(List<Movie> movies) {
+                adapter.setFaveMovies(movies);
+            }
+        });
+    }
 
-      FaveMoviesFragment faveMoviesFragment = new FaveMoviesFragment();
-      faveMoviesFragment.setArguments(args);
-
-      return faveMoviesFragment;
-    };
 
 }
